@@ -185,7 +185,7 @@ while True:
         input("Ahora la mapa ordenado dateIndex")
         print (cont['dateIndex'])
         print ("")
-        input("Se acaba de crear el Catalogo Analyzer con su respectiva lista y un mapa ordenado tipo BST")
+        input("Se acaba de crear el Catalogo Analyzer con su respectiva lista y un mapa ordenado tipo RBT")
         # cont es el controlador que se usará de acá en adelante
        
 
@@ -302,16 +302,18 @@ while True:
     elif int(inputs[0]) == 6:
         print("\nRequerimiento No 4 del reto 3: ")
 
+#input fecha inicial
+#input fecha final
+
+
         print("\nBuscando accidentes en un estado: ")
         
         
         #use OH to test
-        stateSearched= "OH"
-        #stateSearched = input("Estado a buscar: ")    
+        #stateSearched= "OH"
+        stateSearched = input("Estado a buscar: ")    
         
-        lst = controller.getAccidentsByRange(cont, initialDate,finalDate) 
-        lst = controller.getAccidentsByState (cont, stateSearched)
-        
+        resultLocation = controller.getAccidentsByState(cont, stateSearched)
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate,finalDate)

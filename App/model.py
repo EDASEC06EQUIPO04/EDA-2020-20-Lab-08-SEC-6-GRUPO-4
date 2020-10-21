@@ -41,12 +41,16 @@ def newAnalyzer():
     # creo la lista para almacenar todos los accidentes, esto es cada fila del excel con sus 49 campos
     # crea un Cataolo de Analyzer, una lista para los accidentes y una Mapa Ordenado para las fechas
     analyzer={ 'accidents':None,
-               'dateIdndex':None
+                'dateIdndex':None,
+                'location':None
             }
     analyzer['accidents']=lt.newList('SINGLE_LINKED',compareIds)
 
     #analyzer['dateIndex']=om.newMap(omaptype='BST',comparefunction=compareDates)
     analyzer['dateIndex']=om.newMap(omaptype='RBT',comparefunction=compareDates)
+
+    #analyzer['location']=om.newMap(omaptype='RBT',comparefunction=compareSeverity)
+
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -57,7 +61,9 @@ def addAccident(analyzer, accident):
     # crea solo el mapa 
     lt.addLast(analyzer['accidents'], accident)
 
+
     updateDateIndex(analyzer['dateIndex'], accident)
+
     
     return analyzer
 
@@ -82,6 +88,12 @@ def updateDateIndex(map, accident):
    # addDateIndex(datentry, accident)
     return map
 
+
+
+
+#-----------------------------------------------------------------------------------
+#dead code
+
 def addDateIndex(datentry, accident):
     """
     Actualiza un indice de tipo de accidentes.  Este indice tiene una lista
@@ -96,11 +108,28 @@ def addDateIndex(datentry, accident):
     if (sever is None):
         entry = new_Accident_Entry(accident['severity'], accident)
         lt.addLast(accident['severity'], accident)
-        m.put(accidentIndex, accident['severity'], entry)
+        m.put(severity, accident['severity'], entry)
     else:
         entry = me.getValue(sever)
         lt.addLast(entry['lstOfAccidents'], accident)
     return datentry
+
+
+def addDateIndexState (datentry, location):
+    lst = datentry['lst_accidents']
+    lt.addLast(lst, location)
+    locationIndex = datentry['locationIndex']
+    locentry = m.get(locationIndex, location['State'])
+    if (locentry is None):
+        entry = newLocationEntry(location['State'], location)
+        lt.addLast(entry['lstlocations'], location)
+        m.put(locationIndex, location['State'], entry)
+    else:
+        entry = me.getValue(locentry)
+        lt.addLast(entry['lstlocations'], location)
+    return datentry
+    
+
 
 def new_Accident_Entry(severity, accident):
     """
@@ -109,9 +138,12 @@ def new_Accident_Entry(severity, accident):
     """
     ofentry = {'accident1': None, 'lstOfAccidents': None}
     ofentry['accident1'] = severity
-    ofentry['lstOfAccidents'] = lt.newList('SINGLELINKED', compareAccidents)
+    ofentry['lstOfAccidents'] = lt.newList('SINGLELINKED', compareSeverity)
     return ofentry
 
+
+#----------------------------------------------------------------------------
+#end dead code
 
 
 def newDataEntry(accident):
@@ -121,10 +153,16 @@ def newDataEntry(accident):
     """
     entry = {'severityIndex': None, 'lst_accidents': None}
     entry['severityIndex'] = m.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     comparefunction=compareSeverity)
+                                    maptype='PROBING',
+                                    comparefunction=compareSeverity)
     entry['lst_accidents'] = lt.newList('SINGLE_LINKED', compareDates)
     return entry
+
+def newLocationEntry(locationgrp, crime):
+    stateentry = {'location': None, 'lstlocations': None}
+    stateentry['location'] = locationgrp
+    stateentry['lstlocations'] = lt.newList('SINGLELINKED', compareStates)
+    return stateentry
 
 
 # ==============================
@@ -148,7 +186,11 @@ def getAccidentsByRange(analyzer, initialDate,finalDate):
 
 
 def getAccidentsByState(analyzer, stateInput):
-    lst= om.values(analyzer, [''])
+        statemap = me.getValue(crimedate)['offenseIndex']
+        numoffenses = m.get(offensemap, offensecode)
+        if numoffenses is not None:
+            return m.size(me.getValue(numoffenses)['lstoffenses'])
+        return 0
 
 
 
@@ -205,10 +247,7 @@ def compareDates (date1,date2):
         return -1
 
 def compareAccidents(accidente1, accidente2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
+
     acci = me.getKey(accidente2)
     if (accidente1 == acci):
         return 0
@@ -218,14 +257,22 @@ def compareAccidents(accidente1, accidente2):
         return -1
 
 def compareSeverity(severity1, severity2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
+
     sever = me.getKey(severity2)
     if (severity1 == sever):
         return 0
     elif (severity1 > sever):
+        return 1
+    else:
+        return -1
+
+
+def compareStates(keyname, state):
+    
+    authentry = me.getKey(state)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
         return 1
     else:
         return -1
