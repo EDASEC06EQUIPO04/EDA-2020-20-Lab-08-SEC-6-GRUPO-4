@@ -44,8 +44,9 @@ def newAnalyzer():
                'dateIdndex':None
             }
     analyzer['accidents']=lt.newList('SINGLE_LINKED',compareIds)
-    analyzer['dateIndex']=om.newMap(omaptype='BST',comparefunction=compareDates)
 
+    #analyzer['dateIndex']=om.newMap(omaptype='BST',comparefunction=compareDates)
+    analyzer['dateIndex']=om.newMap(omaptype='RBT',comparefunction=compareDates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -53,8 +54,11 @@ def newAnalyzer():
 def addAccident(analyzer, accident):
     """
     """
+    # crea solo el mapa 
     lt.addLast(analyzer['accidents'], accident)
+
     updateDateIndex(analyzer['dateIndex'], accident)
+    
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -141,6 +145,11 @@ def getAccidentsByRange(analyzer, initialDate,finalDate):
         return 0
     """
     return lst
+
+
+def getAccidentsByState(analyzer, stateInput):
+    lst= om.values(analyzer, [''])
+
 
 
 def accidentSize(analyzer):
