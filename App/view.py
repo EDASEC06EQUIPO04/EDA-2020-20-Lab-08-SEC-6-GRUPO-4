@@ -24,6 +24,7 @@ import sys
 import config
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
+#from DISClib.Algorithms.Sorting import insertionsortReto1 as ordenar
 from App import controller
 import datetime
 assert config
@@ -47,9 +48,44 @@ accidentFile='us_accidents_small.csv'
 #accidentFile='US_Accidents_Dec19.csv'
 
 
+def printAccidentOriginal(info, lista):
+    
+        accidentCounter=0
+
+        accidentRead=lt.getElement(info['accidents'],0) 
+        print (accidentRead['Severity'])
+        print (lt.getElement(lista,0))
+        numAccidentes=controller.accidentSize(info)
+        #for k in range (0, lt.size(lista)):
+            #print (lt.getElement(lista,k))                  #Aqui se imprimen los valores del mapa
+        dateCom=lt.getElement(lista,0)  # Esta fecha viene del Mapa
+            
+        for i in range (0,numAccidentes):
+            #for i in range (0,10):    
+                accidentRead=lt.getElement(info['accidents'],i) 
+                #oneDate = datetime.datetime.strptime(accidentRead['Start_Time'], '%Y-%m-%d')
+                oneDate = accidentRead['Start_Time']
+                oneDate = datetime.datetime.strptime(oneDate, '%Y-%m-%d %H:%M:%S')
+                oneDate1 = datetime.datetime.strftime(oneDate,'%Y-%m-%d')
+                
+                if str(dateCom)==str(oneDate1):     
+                    print (dateCom, "--> ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
+                    accidentCounter = accidentCounter+1
+        
+        print ("se encontraron ", accidentCounter ," accidentes en la fecha especificada")
+
+def compareIds (id1,id2):
+    
+    # compara los crimenes
+    if (id1==id2):
+        return 0
+    elif (id1>id2):
+        return 1
+    else:
+        return -1
 
 
-def printAccident(info, lista):
+def printAccidentOrdenado(info, lista):
 
         accidentCounter=0
 
@@ -60,26 +96,30 @@ def printAccident(info, lista):
         #for k in range (0, lt.size(lista)):
             #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
         dateCom=lt.getElement(lista,0)
-            
+
+        accidente1=lt.newList('SINGLE_LINKED',compareIds)
+        accidente1=info['accidents']
+
+        accidente1=accidente1.sort(accidentRead['Start_Time'])
+        
+        print (accidente1)
+        input("Ya lo ordene")
+        """    
         for i in range (0,numAccidentes):
-            #for i in range (0,10):    
+             
                 accidentRead=lt.getElement(info['accidents'],i) 
                 #oneDate = datetime.datetime.strptime(accidentRead['Start_Time'], '%Y-%m-%d')
                 oneDate = accidentRead['Start_Time']
                 oneDate = datetime.datetime.strptime(oneDate, '%Y-%m-%d %H:%M:%S')
                 oneDate1 = datetime.datetime.strftime(oneDate,'%Y-%m-%d')
                 
-                #print (oneDate1)
-                #oneDate = datetime.fromisoformat(oneDate)
-                #oneDate = datetime._parse_isoformat_date(oneDate)
-                #print ("  k: ", k, "   v:", v, "  ", i, ": " , accidentRead['ID']," ", accidentRead['Severity']," ",oneDate1)
-                #print (dateCom, "-->",oneDate1)
-                #input("")
+
                 if str(dateCom)==str(oneDate1):     
                     print (dateCom, "--> ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
                     accidentCounter = accidentCounter+1
         
         print ("se encontraron ", accidentCounter ," accidentes en la fecha especificada")
+        """
       
 def printAccidentAntesDe(info, lista):
     
@@ -120,6 +160,7 @@ def printAccidentRange(info, lista):
         print (accidentRead['Severity'])
         print (lt.getElement(lista,0))
         numAccidentes=controller.accidentSize(info)
+
         for k in range (1, lt.size(lista)+1):
             #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
             dateCom=lt.getElement(lista,k)
@@ -217,6 +258,7 @@ Menu principal
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar >> ')
+    accidentesArray=[]
 
     if int(inputs[0]) == 1:
 
@@ -241,7 +283,7 @@ while True:
 
         print("\n Cargando información de accidentes ....\n")
 
-        controller.loadData(cont, accidentFile)
+        controller.loadData(cont, accidentFile,accidentesArray)
         #print (lt.getElement(cont['accidents'],0))
         #print (lt.getElement(cont['accidents'],controller.accidentSize(cont)))
         #for i  in range (0,controller.accidentSize(cont)):
@@ -262,6 +304,7 @@ while True:
        
 
     elif int(inputs[0]) == 3:
+        t1_start = process_time()
         print("\nIngrese una fecha para buscar accidentes: ")
         
         initialDate="2000-00-00"
@@ -273,23 +316,20 @@ while True:
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate)
-
-        #for k,v in lst.items():
-           #print (lt.getElement(lst,0))
-        #   print (v)
-
-              
-        printAccident(cont,lst)
-
-        """tamLista= lt.size(lst)   
-        for i in range (1, tamLista):
-               print (lt.getElement(lst,i))
         
-      
-        """
+        #printAccidentOrdenado(cont,lst) # llamo la función para que compare las fechas del Map contra la lista  y cuente los accidentes
+       
+        printAccidentOriginal(cont,lst) # llamo la función para que compare las fechas del Map contra la lista  y cuente los accidentes
+        
+        print (accidentesArray)
+        input ("Este es un vector temporal")
+        input("Clic para continuar")
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
         input("Clic para continuar")
 
     elif int(inputs[0]) == 4:
+        t1_start = process_time()
         print("\nIngrese una fecha para buscar accidentes antes de esta: ")
         
         initialDate="2000-00-00"
@@ -308,15 +348,13 @@ while True:
         
         printAccidentAntesDe(cont,lst)
 
-        """tamLista= lt.size(lst)   
-        for i in range (1, tamLista):
-               print (lt.getElement(lst,i))
-        
-      
-        """
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
         input("Clic para continuar")
+   
 
     elif int(inputs[0]) == 5:
+        t1_start = process_time()
         print("\nIngrese una fecha para buscar accidentes antes de esta: ")
         
         initialDate="2000-00-00"
@@ -330,11 +368,8 @@ while True:
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print ("Rango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
 
-        #for k,v in lst.items():
-           #print (lt.getElement(lst,0))
-        #   print (v)
         
-        printAccidentRange(cont,lst)
+        printAccidentRange(cont,lst) # LLamado a la funciono para buscar accindetes en un rango dado
         
         """tamLista= lt.size(lst)   
         for i in range (1, tamLista):
@@ -342,10 +377,15 @@ while True:
         
     
         """
+
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
         input("Clic para continuar")
+     
 
 
     elif int(inputs[0]) == 6:
+        t1_start = process_time()
         print("\nRequerimiento No 4 del reto 3: ")
 
         print("\nBuscando accidentes en un estado: ")
@@ -361,12 +401,18 @@ while True:
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate,finalDate)
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+        input("Clic para continuar")
 
     elif int(inputs[0]) == 8:
+        t1_start = process_time()
         print("\nRequerimiento No 8 del reto 3: ")
-        lst=[]
-        printAccidentGeo(cont,lst)
-
+        lst=[] 
+        printAccidentGeo(cont,lst) # llamado a de funcion para que busque los accidentes en una coordenada dada y en un radio X dado
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+        input("Clic para continuar")
 
 
     else:

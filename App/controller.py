@@ -25,6 +25,7 @@ from App import model
 import datetime
 import csv
 from DISClib.ADT import list as lt
+#from DISClib.Algorithms.Sorting import insertionsortReto1 as ordenar
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -52,23 +53,12 @@ def init():
 #  de datos en los modelos
 # ___________________________________________________
 
-def loadData(analyzer, accidentsfile):
+def loadData(analyzer, accidentsfile, accidentesArray):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    #accidentes=[]
+  
     accidentsfile = cf.data_dir + accidentsfile
-    """
-    archivo = open(accidentsfile,'r')
-    archivo.readline()
-    linea = archivo.readline()
-    while len(linea)>0:
-        datos=linea.split(",")
-        accidente=crear_accidente(datos[0],datos[1],datos[2],datos[3],datos[4],datos[5].rstrip("\n"))
-        accidentes.append(accidente)
-        #model.addAccident(analyzer, accidente)
-    """
-    #accidentsfile = cf.data_dir + accidentsfile
     input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),delimiter=",")
     for accident in input_file:
          
@@ -83,13 +73,40 @@ def loadData(analyzer, accidentsfile):
         
         accidente1=lt.newList('SINGLE_LINKED',compareIds)
         #'ARRAY_LIST' SINGLE_LINKED
-        accidente1=accident
+        accidente1=accidente
+        accidentesArray.append (accidente1)
+       
+        #model.addAccident(analyzer, accidente1)
+       
+    for i in range (0,len(accidentesArray)*0+200):    
+        print (accidentesArray[i])
+    input ("Se imprime Arreglo sin ordenar. Clic continuar.... favor espera mientras se ordena")
 
-        #accidente1.values= {accident['ID'],accident['Severity'],accident['Severity'],accident['Start_Lat'],accident['Start_Lat'],accident['State']}
+    ##### Lineas para ordenar el Arreglo  ######
+    criterio='Start_Time'
+    lst=accidentesArray
+    for index in range(1,len(lst)):
+        currentvalue = (lst[index][criterio])
+        position = index
+        original=lst[index]
+        while position>0 and (lst [position-1][criterio])>(currentvalue):
+            lst [position]=lst [position-1]
+            position = position-1
+        lst[position]=original
+    accidentesArray = lst
+
+    ###### Aqui finaliza                 #####
+       
+    for i in range (0,len(accidentesArray)*0+200):    
+        print (accidentesArray[i])
+    input (" Arreglo ordenado,Clic para continuar ....... ")
+
+    for i in range (0,len(accidentesArray)):    
         model.addAccident(analyzer, accidente1)
-    
-    #input ("Clic para continuar")
-    return analyzer 
+
+    return analyzer
+
+
 
 def compareIds (id1,id2):
     
