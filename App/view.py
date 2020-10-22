@@ -28,6 +28,7 @@ from App import controller
 import datetime
 assert config
 from time import process_time 
+from math import acos, cos, sin, radians
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -41,8 +42,8 @@ operación seleccionada.
 # ___________________________________________________
 
 
-#accidentFile='us_accidents_small.csv'
-accidentFile='us_accidents_dis_2016.csv'
+accidentFile='us_accidents_small.csv'
+#accidentFile='us_accidents_dis_2016.csv'
 #accidentFile='US_Accidents_Dec19.csv'
 
 
@@ -142,6 +143,51 @@ def printAccidentRange(info, lista):
                     accidentCounter = accidentCounter+1
         accidentCounter = accidentCounter
         print ("se encontraron ", accidentCounter ," accidentes antes de la fecha especificada")     
+
+
+def distancia (c1, c2):
+    c1= (radians(c1[0]), radians (c1[1]))
+    c2= (radians(c2[0]), radians (c2[1]))
+    dist=acos(sin(c1[0])*sin(c2[0])+cos(c1[0])*cos (c2[0])*cos(c1[1]-c2[1]))
+    return dist * 6371.01
+
+
+
+def printAccidentGeo(info, lista):
+    
+        #Coordenada (latitud, longitud)
+        la1=float(input("Digite la latitud_1: "))
+        lo1=float(input("Digite la longitud_1: "))
+        c1=(la1,lo1)
+        radio=float(input("Digite el numero de kilometros a la redonda para verificar: "))
+        #la=float(input("Digite la latitud_2: "))
+        #lo=float(input("Digite la longitud_2: "))
+        #c2=(la,lo)
+        #resp=distancia (c1,c2)
+        #print ("La distancia entrer las dos coordenadas es:" , resp)
+        accidentCounter=0
+
+        accidentRead=lt.getElement(info['accidents'],0) 
+        print (accidentRead['Start_Lat'], accidentRead['Start_Lng'])
+        
+        numAccidentes=controller.accidentSize(info)    
+        for i in range (0,numAccidentes):
+            accidentRead=lt.getElement(info['accidents'],i) 
+            la2=accidentRead['Start_Lat']
+            lo2=accidentRead['Start_Lng']
+            c2=(float(la2),float(lo2))
+            resp=distancia (c1,c2)
+            #print ("La distancia entrer las dos coordenadas es:" , resp)
+        
+            if resp<=50:     
+                accidentCounter = accidentCounter+1
+        
+        print ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")   
+        print ("")
+        print ("se encontraron ", accidentCounter ," accidentes en el radio dado")
+        input ("Clic para continuar")
+        
+
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -315,6 +361,13 @@ while True:
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate,finalDate)
+
+    elif int(inputs[0]) == 8:
+        print("\nRequerimiento No 8 del reto 3: ")
+        lst=[]
+        printAccidentGeo(cont,lst)
+
+
 
     else:
         sys.exit(0)
