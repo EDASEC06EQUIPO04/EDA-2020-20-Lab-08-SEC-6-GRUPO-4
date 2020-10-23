@@ -178,6 +178,7 @@ def getAccidentsDateSeverity (analyzer, initialDate, severity):
     if accdate['key'] is not None:
         severitymap = me.getValue(accdate)['SeverityIndex']
         numtotal = m.get(severitymap, severity)
+
         if numtotal is not None:
             return m.size(me.getValue(numtotal)['lstseverity'])
         return 0
@@ -263,10 +264,34 @@ def getAccidentsRangeState (analyzer, initialdate, finaldate):
         currentdate = currentdate + datetime.timedelta(days=1) 
     print(highesState)
 
-
-def getAccidentsHourRange (cont, initialtime, finaltime):
+#---------------------------------------------------------------------------------------
+def getAccidentsHourRange (analyzer, initialtime, finaltime, lowrange, highrange):
+    print("rango de tiempo:")
     print(initialtime.strftime('%H:%M:%S'))
     print(finaltime.strftime('%H:%M:%S'))
+
+    print("rango de fechas:")
+    print(lowrange)
+    print(highrange)
+    
+    #resultlistcat2 =lt.newList(datastructure= 'SINGLE_LINKED')
+    resultlistcat2 =0
+    resultlistcat3 =lt.newList(datastructure= 'SINGLE_LINKED')
+    resultlistcat4 =lt.newList(datastructure= 'SINGLE_LINKED')
+    currentdate = lowrange
+
+
+    while currentdate < highrange:
+        partialtot = getAccidentsDateSeverity(analyzer, currentdate.date(), "2")
+        print(partialtot)
+        resultlistcat2 = resultlistcat2 + partialtot
+        #lt.addLast(resultlistcat2, partialtot)
+        currentdate = currentdate + datetime.timedelta(days=1) 
+
+
+
+    # this is a variation of the get accidents date severity
+
 
 
 

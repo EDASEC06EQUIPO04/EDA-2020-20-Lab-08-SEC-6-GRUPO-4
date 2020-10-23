@@ -134,10 +134,15 @@ def getAccidentsByState (analyzer, stateInput):
     return model.getAccidentsByState(analyzer, stateInput)
 
 
-def getAccidentsHourRange (cont, initialtime, finaltime):
+def getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange):
+    lowrange = datetime.datetime.strptime(lowrange, '%Y-%m-%d')
+    highrange = datetime.datetime.strptime(highrange, '%Y-%m-%d')
+    
+
+
     initialtime = datetime.datetime.strptime(initialtime, '%H:%M:%S')
     finaltime = datetime.datetime.strptime(finaltime, '%H:%M:%S')
-    model.getAccidentsHourRange (cont, initialtime, finaltime)
+    model.getAccidentsHourRange (cont, initialtime.date(), finaltime.date(), lowrange.date(), highrange.date())
 
 #//-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------

@@ -263,9 +263,11 @@ while True:
 
         initialtime="17:00:00"
         finaltime= "19:30:00"
+        lowrange =str(controller.minKey(cont))
+        highrange =str(controller.maxKey(cont))
         #initialtime = input("hora inicial(rangos de 30 min) : ")       
         #finaltime = input("hora final (rangos de 30 min) : ")
-        controller.getAccidentsHourRange (cont, initialtime, finaltime)
+        controller.getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange)
 
         pass
 
