@@ -110,11 +110,19 @@ def getAccidentsByRange(analyzer, initialDate,finalDate):
 def getAccidentsDateSeverity(analyzer, Date, severity):    
     return model.getAccidentsDateSeverity(analyzer, Date.date(), severity)
 
+def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):  
+    initialdate = datetime.datetime.strptime(initialdate, '%Y-%m-%d')
+    finaldate = datetime.datetime.strptime(finaldate, '%Y-%m-%d')
+    return model.getAccidentsRangeSeverity(analyzer, initialdate.date(), finaldate.date())
+
 
 def getAccidentsBeforeDate(analyzer, dateinput):
     return model.getAccidentsBeforeDate(analyzer, dateinput)
 
 
+
+def accidentHighestCat(cat1, cat2, cat3):
+    return model.accidentHighestCat()
 
 
 def getAccidentsByState (analyzer, stateInput):

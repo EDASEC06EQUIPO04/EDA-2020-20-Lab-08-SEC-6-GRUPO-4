@@ -139,7 +139,6 @@ def getAccidentsByRange(analyzer, initialDate,finalDate):
         totalAccidents += lt.size(lstdate['lstaccidents'])
     return totalAccidents
 
-
 #this is the laziest way of solving this, but if it works it aint stupid
 def getAccidentsOnDate (analyzer, dateinput):
     lst = om.values(analyzer['dateIndex'], dateinput, dateinput)
@@ -190,8 +189,41 @@ def dateMostAccidents(analyzer, initialDate, finalDate):
     return resultDate
 
 #---------------------------------------------------------------------------
+#REQ3
+#todo lo demas que requiere este ya esta en el req 1 y en la funcion general de find in range
+def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):
+    currentdate = initialdate
+    accidentsCat2=0
+    accidentsCat3=0
+    accidentsCat4=0
+
+    while currentdate < finaldate :
+        
+        accidentsCat2 = accidentsCat2 + getAccidentsDateSeverity(analyzer, currentdate, "2")
+        accidentsCat3 = accidentsCat3 + getAccidentsDateSeverity(analyzer, currentdate, "3")
+        accidentsCat4 = accidentsCat4 + getAccidentsDateSeverity(analyzer, currentdate, "4")
+
+        currentdate = currentdate + datetime.timedelta(days=1) 
+    
+    accidentHighestCat(accidentsCat2, accidentsCat3, accidentsCat4)
 
 
+
+
+
+def accidentHighestCat(cat1, cat2, cat3):
+    largest = max(cat1, cat2, cat3)
+    if largest == cat1 :
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat1)+ " accidentes")
+    elif largest == cat2:
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat2)+ " accidentes")
+    else :
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat3)+ " accidentes")
+
+#---------------------------------------------------------------------------
 
 
 

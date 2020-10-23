@@ -253,15 +253,17 @@ while True:
         #output: total de accidentes en rango
         #output categoria de accidentes mas reportada
 
-        print("\nIngrese una fecha para buscar accidentes antes de esta: ")
+        print("\nIngrese un rango para buscar accidentes: ")
         initialDate="2016-08-09"
         finalDate= "2016-09-15"
         #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
         #finalDate = input("Rango Final (YYYY-MM-DD): ")
         total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
-        
+
         print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
-        print("\nTotal de crimenes en el rango de fechas: " + str(total) + "\n")
+        print("\nTotal de accidentes en el rango de fechas: " + str(total) + "\n")
+        controller.getAccidentsRangeSeverity(cont, initialDate, finalDate) 
+
         input("\noprima tecla para continuar")
 
 
@@ -270,7 +272,7 @@ while True:
         #input: fecha inicial
         #input: fecha final
         #output: estado con mas accidentes en rango
-        #output: fecha con mas accidentes
+        #output: fecha con mas accidentes en rango
 
         #use OH to test
         print("\nRequerimiento No 4 del reto 3: ")
