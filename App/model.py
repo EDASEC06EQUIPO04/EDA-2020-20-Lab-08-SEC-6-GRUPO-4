@@ -280,13 +280,35 @@ def getAccidentsHourRange (analyzer, initialtime, finaltime, lowrange, highrange
     resultlistcat4 =lt.newList(datastructure= 'SINGLE_LINKED')
     currentdate = lowrange
 
-
+    severity = "2"
     while currentdate < highrange:
-        partialtot = getAccidentsDateSeverity(analyzer, currentdate.date(), "2")
-        print(partialtot)
-        resultlistcat2 = resultlistcat2 + partialtot
-        #lt.addLast(resultlistcat2, partialtot)
-        currentdate = currentdate + datetime.timedelta(days=1) 
+        temptotal = int(dateSeverity(analyzer, currentdate, severity))
+        resultlistcat2 = resultlistcat2 + temptotal
+    print (resultlistcat2)
+
+
+
+
+def getAccidentsByRangeHour(analyzer, initialDate,finalDate, initialtime, finaltime):
+    
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+
+
+
+def dateSeverity(analyzer, initialDate, severity):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        severitymap = me.getValue(accdate)['SeverityIndex']
+        numtotal = m.get(severitymap, severity)
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lstseverity'])
+        return 0
 
 
 

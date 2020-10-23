@@ -184,7 +184,7 @@ while True:
 
         #initialDate = input("Fecha Busqueda (YYYY-MM-DD): ") 
         initialDate="2016-08-09"
-        initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d') 
+        
 
         accidentsseverity2 = controller.getAccidentsDateSeverity(cont, initialDate, "2") 
         print("\nTotal de accidentes tipo 2: " + str(accidentsseverity2))
@@ -262,14 +262,28 @@ while True:
 
 
         initialtime="17:00:00"
-        finaltime= "19:30:00"
-        lowrange =str(controller.minKey(cont))
-        highrange =str(controller.maxKey(cont))
+        finaltime = "19:30:00"
         #initialtime = input("hora inicial(rangos de 30 min) : ")       
         #finaltime = input("hora final (rangos de 30 min) : ")
-        controller.getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange)
+        initialDate =  str(controller.minKey(cont))
+        finalDate = str(controller.maxKey(cont))
 
-        pass
+        total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
+
+        print ("\nPrimera fecha del registro: [ ",initialDate, " ],  fecha maxima: [ ", finalDate," ]")
+        print("\nTotal de accidentes en el rango de fechas: " + str(total) + "\n")
+        print("rango de horas consultadas: " + str(initialtime) + " a " + str (finaltime))
+
+        totalhours = controller.getAccidentsByRangeHour(cont, initialDate, finalDate, initialtime, finaltime)
+
+
+
+        print("\nTotal de accidentes en las hoars especificada: " + str(hourtotal) + "\n")
+
+
+        
+        # controller.getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange)
+
 
     elif int(inputs[0]) == 8:
         #REQUERIMIENTO 6
