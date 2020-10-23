@@ -274,20 +274,21 @@ while True:
         #output: estado con mas accidentes en rango
         #output: fecha con mas accidentes en rango
 
-        #use OH to test
-        print("\nRequerimiento No 4 del reto 3: ")
         print("\nBuscando accidentes en un estado: ")
 
-        lst = controller.getAccidentsByRange(cont, initialDate,finalDate) 
-        lst = controller.getAccidentsByState (cont, stateSearched)
-        
-        #print (lst)
-        print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
-        print (initialDate,finalDate)
-    elif int(inputs[0]) == 8:
-        print("\nRequerimiento No 6 del reto 3: ")
-        lst=[]
-        printAccidentGeo(cont,lst)
+        initialDate="2016-08-09"
+        finalDate= "2016-09-15"
+        #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
+        #finalDate = input("Rango Final (YYYY-MM-DD): ")
+        total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
+        print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
+        print("\nTotal de accidentes en el rango de fechas: " + str(total) + "\n")
+        controller.getAccidentsRangeState(cont, initialDate, finalDate) 
+
+
+
+
+
 
     elif int(inputs[0]) == 7:
         #REQUERIMIENTO 5
@@ -295,8 +296,11 @@ while True:
         #input: hora final
         #output: total accidentes agrupados severidad.  agrupar inputs de hora en clusters de 30 min
         #output: porcentaje de esta severidad en relacion al total
+        initialDate="2016-08-09"
+        finalDate= "2016-09-15"
+        #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
+        #finalDate = input("Rango Final (YYYY-MM-DD): ")
 
-        #use OH to test
         pass
 
     elif int(inputs[0]) == 8:

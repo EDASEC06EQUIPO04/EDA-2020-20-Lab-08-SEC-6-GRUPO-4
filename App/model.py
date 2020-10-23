@@ -91,7 +91,9 @@ def addDateIndex(datentry, accident):
     lst = datentry['lstaccidents']
     lt.addLast(lst, accident)
     severity = datentry['SeverityIndex']
+    state = datentry['StateIndex']
     sever = m.get(severity, accident['Severity'])
+    stateToAdd = m.get(state,accident['State'])
     if (sever is None):
         entry = newSeverityEntry(accident["Severity"], accident)
         lt.addLast(entry['lstseverity'], accident)
@@ -99,7 +101,18 @@ def addDateIndex(datentry, accident):
     else:
         entry = me.getValue(sever)
         lt.addLast(entry['lstseverity'], accident)
+
+    if(stateToAdd is None):
+        entry= newStateEntry(accident['State'], accident)
+        lt.addLast(entry['lststate'], accident)
+        m.put(state, accident['State'], entry)
+    else:
+        entry = me.getValue(stateToAdd)
+        lt.addLast(entry['lststate'], accident)
     return datentry
+
+
+
 
 def newDataEntry(accident):
     """
@@ -110,6 +123,7 @@ def newDataEntry(accident):
     ofentry['SeverityIndex'] = m.newMap(numelements=100,
                                     maptype='PROBING',
                                     comparefunction=compareSeverity)
+    ofentry ['StateIndex'] = m.newMap(numelements=10, maptype= 'PROBING', comparefunction= compareStates)
     ofentry['lstaccidents'] = lt.newList('SINGLELINKED', compareDates)
     return ofentry
 
@@ -124,6 +138,15 @@ def newSeverityEntry(AccSeverity, accident):
     entry['severityIndex'] = AccSeverity
     entry['lstseverity'] = lt.newList('SINGLE_LINKED', compareSeverity)
     return entry
+
+
+def newStateEntry(AccState, accident):
+    entry = {'sateIndex': None, 'lststate': None}
+    entry['statetyIndex'] = AccState
+    entry['lststate'] = lt.newList('SINGLE_LINKED', compareStates)
+    return entry
+
+
 
 
 # ==============================
@@ -175,7 +198,6 @@ def getAccidentsBeforeDate (analyzer, dateinput):
 
 
 def dateMostAccidents(analyzer, initialDate, finalDate):
-
     currentdate = initialDate
     mostAccidents=0
     resultDate= None
@@ -198,16 +220,13 @@ def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):
     accidentsCat4=0
 
     while currentdate < finaldate :
-        
+        #only 3 possible categories exist, as the possible iterators are of such a  small size explicitly stating them as a str facilitates readability of the code
         accidentsCat2 = accidentsCat2 + getAccidentsDateSeverity(analyzer, currentdate, "2")
         accidentsCat3 = accidentsCat3 + getAccidentsDateSeverity(analyzer, currentdate, "3")
         accidentsCat4 = accidentsCat4 + getAccidentsDateSeverity(analyzer, currentdate, "4")
 
-        currentdate = currentdate + datetime.timedelta(days=1) 
-    
+        currentdate = currentdate + datetime.timedelta(days=1)  
     accidentHighestCat(accidentsCat2, accidentsCat3, accidentsCat4)
-
-
 
 
 
@@ -224,6 +243,27 @@ def accidentHighestCat(cat1, cat2, cat3):
         print("la categoria tiene " + str(cat3)+ " accidentes")
 
 #---------------------------------------------------------------------------
+
+def getAccidentsDateState (analyzer, initialDate, stateinpt):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        statemap = me.getValue(accdate)['StateIndex']
+        numtotal = m.get(statemap, stateinpt)
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lststate'])
+        return 0
+
+
+def getAccidentsRangeState (analyzer, initialdate, finaldate):
+    highesState=0
+    currentdate = initialdate
+
+    while currentdate < finaldate :
+        highesState = highesState + getAccidentsDateState(analyzer, currentdate, "OH")
+        currentdate = currentdate + datetime.timedelta(days=1) 
+    print(highesState)
+
+
 
 
 
@@ -298,6 +338,15 @@ def compareSeverity(severity1, severity2):
     if (severity1 == sever):
         return 0
     elif (severity1 > sever):
+        return 1
+    else:
+        return -1
+
+def compareStates ( state1, state2):
+    sever = me.getKey(state2)
+    if (state1 == sever):
+        return 0
+    elif (state1 > sever):
         return 1
     else:
         return -1
