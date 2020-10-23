@@ -81,8 +81,6 @@ def crear_accidente(ID:str,Severity:int,Start_Time:datetime,Start_Lat:None,Start
 
     #Start_Time = datetime.datetime.strptime(Start_Time, "%a %b %d %H:%M:%S %Y")
     
-
-
     return {
     "ID":ID,
     "Severity":Severity,
@@ -134,6 +132,17 @@ def accidentHighestCat(cat1, cat2, cat3):
 def getAccidentsByState (analyzer, stateInput):
 
     return model.getAccidentsByState(analyzer, stateInput)
+
+
+def getAccidentsHourRange (cont, initialtime, finaltime):
+    initialtime = datetime.datetime.strptime(initialtime, '%H:%M:%S')
+    finaltime = datetime.datetime.strptime(finaltime, '%H:%M:%S')
+    model.getAccidentsHourRange (cont, initialtime, finaltime)
+
+#//-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
+
+
 
 
 def accidentSize(analyzer):

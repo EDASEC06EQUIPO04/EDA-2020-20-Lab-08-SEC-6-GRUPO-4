@@ -243,7 +243,7 @@ def accidentHighestCat(cat1, cat2, cat3):
         print("la categoria tiene " + str(cat3)+ " accidentes")
 
 #---------------------------------------------------------------------------
-
+#req 4
 def getAccidentsDateState (analyzer, initialDate, stateinpt):
     accdate = om.get(analyzer['dateIndex'], initialDate)
     if accdate['key'] is not None:
@@ -264,11 +264,9 @@ def getAccidentsRangeState (analyzer, initialdate, finaldate):
     print(highesState)
 
 
-
-
-
-def getAccidentsByState(analyzer, stateInput):
-    lst= om.values(analyzer, [''])
+def getAccidentsHourRange (cont, initialtime, finaltime):
+    print(initialtime.strftime('%H:%M:%S'))
+    print(finaltime.strftime('%H:%M:%S'))
 
 
 

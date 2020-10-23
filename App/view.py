@@ -51,48 +51,6 @@ accidentFile='us_accidents_dis_2016.csv'
 cont=None
 #--------------------------------
 
-def compareIds (id1,id2):
-    
-    # compara los crimenes
-    if (id1==id2):
-        return 0
-    elif (id1>id2):
-        return 1
-    else:
-        return -1
-
-
-def printAccidentAntesDe(info, lista):
-    
-        accidentCounter=0
-
-        accidentRead=lt.getElement(info['accidents'],0) 
-        print (accidentRead['Severity'])
-        print (lt.getElement(lista,0))
-        numAccidentes=controller.accidentSize(info)
-        for k in range (0, lt.size(lista)):
-            #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
-            dateCom=lt.getElement(lista,k)
-            
-            for i in range (0,numAccidentes):
-            #for i in range (0,10):    
-                accidentRead=lt.getElement(info['accidents'],i) 
-                #oneDate = datetime.datetime.strptime(accidentRead['Start_Time'], '%Y-%m-%d')
-                oneDate = accidentRead['Start_Time']
-                oneDate = datetime.datetime.strptime(oneDate, '%Y-%m-%d %H:%M:%S')
-                oneDate1 = datetime.datetime.strftime(oneDate,'%Y-%m-%d')
-                
-                #print (oneDate1)
-                #oneDate = datetime.fromisoformat(oneDate)
-                #oneDate = datetime._parse_isoformat_date(oneDate)
-                #print ("  k: ", k, "   v:", v, "  ", i, ": " , accidentRead['ID']," ", accidentRead['Severity']," ",oneDate1)
-                #print (dateCom, "-->",oneDate1)
-                #input("")
-                if str(dateCom)>=str(oneDate1):     
-                    print (dateCom, "-->", i, ": " , "ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
-                    accidentCounter = accidentCounter+1
-        accidentCounter = accidentCounter-1
-        print ("se encontraron ", accidentCounter ," accidentes antes de la fecha especificada")        
 
 
 def distancia (c1, c2):
@@ -100,6 +58,11 @@ def distancia (c1, c2):
     c2= (radians(c2[0]), radians (c2[1]))
     dist=acos(sin(c1[0])*sin(c2[0])+cos(c1[0])*cos (c2[0])*cos(c1[1]-c2[1]))
     return dist * 6371.01
+
+
+
+
+
 
 
 
@@ -260,7 +223,7 @@ while True:
         #finalDate = input("Rango Final (YYYY-MM-DD): ")
         total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
 
-        print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
+        print ("\nPrimera fecha del registro: [ ",initialDate, " ],  fecha consultada [ ", finalDate," ]")
         print("\nTotal de accidentes en el rango de fechas: " + str(total) + "\n")
         controller.getAccidentsRangeSeverity(cont, initialDate, finalDate) 
 
@@ -296,10 +259,13 @@ while True:
         #input: hora final
         #output: total accidentes agrupados severidad.  agrupar inputs de hora en clusters de 30 min
         #output: porcentaje de esta severidad en relacion al total
-        initialDate="2016-08-09"
-        finalDate= "2016-09-15"
-        #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
-        #finalDate = input("Rango Final (YYYY-MM-DD): ")
+
+
+        initialtime="17:00:00"
+        finaltime= "19:30:00"
+        #initialtime = input("hora inicial(rangos de 30 min) : ")       
+        #finaltime = input("hora final (rangos de 30 min) : ")
+        controller.getAccidentsHourRange (cont, initialtime, finaltime)
 
         pass
 
