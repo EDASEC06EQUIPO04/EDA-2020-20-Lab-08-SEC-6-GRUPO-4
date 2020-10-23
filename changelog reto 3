@@ -3,6 +3,8 @@ changelog
 por requerimientos:
 
 carga de datos/general:
+as the load data was significantly changed all of the old functions were scrapped and had to be rewritten from scratch as they were either not functional, referencing elements that no longer exist or not returning the proper results
+
 temporalmente se unieron la creacion del arbol con el cargue para acelerar pruebas
 en general se redujo el numero de input() para acelerar pruebas
 se eliminaron comentarios excesivos y dead code para facilitar lectura
@@ -22,9 +24,16 @@ este esta un poco mas elaborado pero todas las varaibles son self-explanatory
 la funcion de "get accidents on date" se puede utilizar paa cualquier fecha con un input y una feca (en formato date), se puede  implementar de manera mas limpia pero de momento utilize el atajo de rango de initial date a initial date
 por el momento los prints estan en el model, moverlos al view se puede pero no queria asignar todas las variable
 
-req 3
-completo
+req 3 
 para el caso del 3 preguntan por categorias, pero no estoy seguro a que se refieren. de momento lo implemento con severity como categoria
 ya revise en el slack, si se referian a severidad
 requirement implemented, this one is inefficient as shit but it is functional
 currently the thing is runnning trought the list 3 times over looking for 3 different cats, its fully functional but hilariously improvable in terms of efficiency
+
+req 4 paretially complete
+accidents in date range are being prinnted succesfully.
+regarding state with highest accidents: 
+-load functions was modified to create a hasmap sorted by states
+-all pertinente functions concerning this change were modified
+-functions for counting accidents in a given state and a range of dates in a state are implemented
+TBD: function to iterate all possible states over this function and return highest
