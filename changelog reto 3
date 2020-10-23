@@ -21,3 +21,10 @@ completo
 este esta un poco mas elaborado pero todas las varaibles son self-explanatory
 la funcion de "get accidents on date" se puede utilizar paa cualquier fecha con un input y una feca (en formato date), se puede  implementar de manera mas limpia pero de momento utilize el atajo de rango de initial date a initial date
 por el momento los prints estan en el model, moverlos al view se puede pero no queria asignar todas las variable
+
+req 3
+completo
+para el caso del 3 preguntan por categorias, pero no estoy seguro a que se refieren. de momento lo implemento con severity como categoria
+ya revise en el slack, si se referian a severidad
+requirement implemented, this one is inefficient as shit but it is functional
+currently the thing is runnning trought the list 3 times over looking for 3 different cats, its fully functional but hilariously improvable in terms of efficiency
