@@ -168,10 +168,11 @@ def getAccidentsBeforeDate (analyzer, dateinput):
     dateformatted = datetime.datetime.strptime(earliestDate, '%Y-%m-%d')
     result = getAccidentsByRange(analyzer, dateformatted.date(), dateinputformatted.date())
     worstDayEver =dateMostAccidents(analyzer, dateformatted, dateinputformatted)
-    print ("Rango desde: [ ",earliestDate, " ] a [ ", dateinput," ]")
-    print("la fecha con mas accidentes fue:  " + str(worstDayEver))
-    print("\nTotal de accidentes en el rango de fechas: " + str(result))
-
+    accidentsWorstDay = getAccidentsOnDate (analyzer, worstDayEver.date())
+    print ("\nRango desde: [ ",earliestDate, " ] a [ ", dateinput," ]")
+    print("\nTotal de accidentes en el rango de fechas: " + str(result)+ "\n")
+    print("\nla fecha con mas accidentes fue:  " + str(worstDayEver))
+    print("\ntotal de accidentes en " + str(worstDayEver) +  " :  " + str(accidentsWorstDay))
 
 
 def dateMostAccidents(analyzer, initialDate, finalDate):

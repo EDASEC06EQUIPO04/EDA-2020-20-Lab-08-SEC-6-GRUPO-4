@@ -260,8 +260,8 @@ while True:
         #finalDate = input("Rango Final (YYYY-MM-DD): ")
         total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
         
-        print ("Rango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
-        print("\nTotal de crimenes en el rango de fechas: " + str(total))
+        print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
+        print("\nTotal de crimenes en el rango de fechas: " + str(total) + "\n")
         input("\noprima tecla para continuar")
 
 
