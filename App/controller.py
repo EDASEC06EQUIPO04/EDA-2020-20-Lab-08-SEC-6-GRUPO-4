@@ -24,6 +24,7 @@ import config as cf
 from App import model
 import datetime
 import csv
+import copy
 from DISClib.ADT import list as lt
 
 """
@@ -70,23 +71,23 @@ def loadData(analyzer, accidentsfile):
     """
     #accidentsfile = cf.data_dir + accidentsfile
     input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),delimiter=",")
-    for accident in input_file:
-         
+    for accidente in input_file:
+
+        """
         accidente ={
 
-        "ID":accident['ID'],
-        "Severity":accident['Severity'],
-        "Start_Time":accident['Start_Time'],
-        "Start_Lat":accident['Start_Lat'],
-        "Start_Lng":accident['Start_Lng'],
-        "State":accident['State']}
-        
-        accidente1=lt.newList('SINGLE_LINKED',compareIds)
-        #'ARRAY_LIST' SINGLE_LINKED
-        accidente1=accident
+        "ID":accidente['ID'],
+        "Severity":accidente['Severity'],
+        "Start_Time":accidente['Start_Time'],
+        "Start_Lat":accidente['Start_Lat'],
+        "Start_Lng":accidente['Start_Lng'],
+        "State":accidente['State']}
+        """
+
+        #accidente1=copy.deepcopy(accidente)
 
         #accidente1.values= {accident['ID'],accident['Severity'],accident['Severity'],accident['Start_Lat'],accident['Start_Lat'],accident['State']}
-        model.addAccident(analyzer, accidente1)
+        model.addAccident(analyzer, accidente)
     
     #input ("Clic para continuar")
     return analyzer 
@@ -124,14 +125,11 @@ def crear_accidente(ID:str,Severity:int,Start_Time:datetime,Start_Lat:None,Start
 #  Funciones para consultas
 # ___________________________________________________
 
-def getAccidentsByRange(analyzer, initialDate,finalDate):
-
-    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
-    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    
+def getAccidentsByRange(analyzer, initialDate,finalDate):    
     return model.getAccidentsByRange(analyzer, initialDate.date(),finalDate.date())
 
-
+def getAccidentsByDate(analyzer, Date):    
+    return model.getAccidentsByDate(analyzer, Date.date())
 
 
 def getAccidentsByState (analyzer, stateInput):

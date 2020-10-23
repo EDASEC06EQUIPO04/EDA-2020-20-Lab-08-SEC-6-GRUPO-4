@@ -28,6 +28,7 @@ from App import controller
 import datetime
 assert config
 from time import process_time 
+from math import acos, cos, sin, radians
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -45,10 +46,63 @@ operación seleccionada.
 accidentFile='us_accidents_dis_2016.csv'
 #accidentFile='US_Accidents_Dec19.csv'
 
+cont=None
 
 
+def printAccidentOriginal(cont, lista):
+    
+    #accidentCounter=0
 
-def printAccident(info, lista):
+    accidentRead=lt.getElement(cont['accidents'],0) 
+    """"
+    print (accidentRead)
+    print (len(accidentRead))
+
+    
+    print(lista)
+    print(type(lista))
+    """
+    #print (lt.getElement(lista,0))
+    numAccidentes=controller.accidentSize(cont)
+    #for k in range (0, lt.size(lista)):
+        #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
+    dateCom=lt.getElement(lista,0)
+    
+    for i in range (0,numAccidentes):
+            """
+        #for i in range (0,10):    
+            accidentRead=lt.getElement(info['accidents'],i) 
+            #oneDate = datetime.datetime.strptime(accidentRead['Start_Time'], '%Y-%m-%d')
+            oneDate = accidentRead['Start_Time']
+            oneDate = datetime.datetime.strptime(oneDate, '%Y-%m-%d %H:%M:%S')
+            oneDate1 = datetime.datetime.strftime(oneDate,'%Y-%m-%d')
+            
+            #print (oneDate1)
+            #oneDate = datetime.fromisoformat(oneDate)
+            #oneDate = datetime._parse_isoformat_date(oneDate)
+            #print ("  k: ", k, "   v:", v, "  ", i, ": " , accidentRead['ID']," ", accidentRead['Severity']," ",oneDate1)
+            #print (dateCom, "-->",oneDate1)
+            #input("")
+            """
+            if str(dateCom)==str(oneDate1):     
+                #print (dateCom, "--> ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
+                accidentCounter = accidentCounter+1
+    
+    print ("se encontraron ", accidentCounter ," accidentes en la fecha especificada")
+    
+
+def compareIds (id1,id2):
+    
+    # compara los crimenes
+    if (id1==id2):
+        return 0
+    elif (id1>id2):
+        return 1
+    else:
+        return -1
+
+
+def printAccidentOrdenado(info, lista):
 
         accidentCounter=0
 
@@ -59,26 +113,27 @@ def printAccident(info, lista):
         #for k in range (0, lt.size(lista)):
             #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
         dateCom=lt.getElement(lista,0)
-            
+
+        accidente1=lt.newList('SINGLE_LINKED',compareIds)
+        accidente1=info['accidents']
+        accidente1=accidente1.sort(accidentRead['Start_Time'])
+        input("Ya lo ordene")
+           
         for i in range (0,numAccidentes):
-            #for i in range (0,10):    
+             
                 accidentRead=lt.getElement(info['accidents'],i) 
                 #oneDate = datetime.datetime.strptime(accidentRead['Start_Time'], '%Y-%m-%d')
                 oneDate = accidentRead['Start_Time']
                 oneDate = datetime.datetime.strptime(oneDate, '%Y-%m-%d %H:%M:%S')
                 oneDate1 = datetime.datetime.strftime(oneDate,'%Y-%m-%d')
                 
-                #print (oneDate1)
-                #oneDate = datetime.fromisoformat(oneDate)
-                #oneDate = datetime._parse_isoformat_date(oneDate)
-                #print ("  k: ", k, "   v:", v, "  ", i, ": " , accidentRead['ID']," ", accidentRead['Severity']," ",oneDate1)
-                #print (dateCom, "-->",oneDate1)
-                #input("")
+
                 if str(dateCom)==str(oneDate1):     
                     print (dateCom, "--> ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
                     accidentCounter = accidentCounter+1
         
         print ("se encontraron ", accidentCounter ," accidentes en la fecha especificada")
+        
       
 def printAccidentAntesDe(info, lista):
     
@@ -142,6 +197,51 @@ def printAccidentRange(info, lista):
                     accidentCounter = accidentCounter+1
         accidentCounter = accidentCounter
         print ("se encontraron ", accidentCounter ," accidentes antes de la fecha especificada")     
+
+
+def distancia (c1, c2):
+    c1= (radians(c1[0]), radians (c1[1]))
+    c2= (radians(c2[0]), radians (c2[1]))
+    dist=acos(sin(c1[0])*sin(c2[0])+cos(c1[0])*cos (c2[0])*cos(c1[1]-c2[1]))
+    return dist * 6371.01
+
+
+
+def printAccidentGeo(info, lista):
+    
+        #Coordenada (latitud, longitud)
+        la1=float(input("Digite la latitud_1: "))
+        lo1=float(input("Digite la longitud_1: "))
+        c1=(la1,lo1)
+        radio=float(input("Digite el numero de kilometros a la redonda para verificar: "))
+        #la=float(input("Digite la latitud_2: "))
+        #lo=float(input("Digite la longitud_2: "))
+        #c2=(la,lo)
+        #resp=distancia (c1,c2)
+        #print ("La distancia entrer las dos coordenadas es:" , resp)
+        accidentCounter=0
+
+        accidentRead=lt.getElement(info['accidents'],0) 
+        print (accidentRead['Start_Lat'], accidentRead['Start_Lng'])
+        
+        numAccidentes=controller.accidentSize(info)    
+        for i in range (0,numAccidentes):
+            accidentRead=lt.getElement(info['accidents'],i) 
+            la2=accidentRead['Start_Lat']
+            lo2=accidentRead['Start_Lng']
+            c2=(float(la2),float(lo2))
+            resp=distancia (c1,c2)
+            #print ("La distancia entrer las dos coordenadas es:" , resp)
+        
+            if resp<=50:     
+                accidentCounter = accidentCounter+1
+        
+        print ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")   
+        print ("")
+        print ("se encontraron ", accidentCounter ," accidentes en el radio dado")
+        input ("Clic para continuar")
+        
+
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -168,6 +268,7 @@ def printMenu():
 """
 Menu principal
 """
+
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar >> ')
@@ -195,7 +296,10 @@ while True:
 
         print("\n Cargando información de accidentes ....\n")
 
-        controller.loadData(cont, accidentFile)
+        cont=controller.loadData(cont, accidentFile)
+
+        #print(controller.loadData(cont, accidentFile))
+
         #print (lt.getElement(cont['accidents'],0))
         #print (lt.getElement(cont['accidents'],controller.accidentSize(cont)))
         #for i  in range (0,controller.accidentSize(cont)):
@@ -214,34 +318,22 @@ while True:
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
         input("Clic para continuar")
        
+        
 
     elif int(inputs[0]) == 3:
+        
         print("\nIngrese una fecha para buscar accidentes: ")
-        
-        initialDate="2000-00-00"
-        #finalDate= "2000-00-00"
-        initialDate = input("Fecha Busqueda (YYYY-MM-DD): ")       
-        #finalDate = input("Rango Final (YYYY-MM-DD): ")
-        lst = controller.getAccidentsByRange(cont, initialDate, initialDate) 
-        
-        #print (lst)
-        print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
-        print (initialDate)
+       
+        initialDate = input("Fecha Busqueda (YYYY-MM-DD): ")  
+        initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d') 
 
-        #for k,v in lst.items():
-           #print (lt.getElement(lst,0))
-        #   print (v)
-
-              
-        printAccident(cont,lst)
-
-        """tamLista= lt.size(lst)   
-        for i in range (1, tamLista):
-               print (lt.getElement(lst,i))
+        lst = controller.getAccidentsByDate(cont, initialDate) 
+        print(lst)
         
-      
-        """
+        #printAccidentOriginal (cont,lst)
         input("Clic para continuar")
+
+
 
     elif int(inputs[0]) == 4:
         print("\nIngrese una fecha para buscar accidentes antes de esta: ")
@@ -315,6 +407,13 @@ while True:
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate,finalDate)
+
+    elif int(inputs[0]) == 8:
+        print("\nRequerimiento No 6 del reto 3: ")
+        lst=[]
+        printAccidentGeo(cont,lst)
+
+
 
     else:
         sys.exit(0)
