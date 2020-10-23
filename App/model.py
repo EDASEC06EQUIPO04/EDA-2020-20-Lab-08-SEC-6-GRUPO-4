@@ -132,16 +132,25 @@ def newSeverityEntry(AccSeverity, accident):
 def getAccidentsByRange(analyzer, initialDate,finalDate):
     
     lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
-
     lstiterator = it.newIterator(lst)
     totalAccidents = 0
-
     while (it.hasNext(lstiterator)):
         lstdate = it.next(lstiterator)
         totalAccidents += lt.size(lstdate['lstaccidents'])
     return totalAccidents
 
 
+#this is the laziest way of solving this, but if it works it aint stupid
+def getAccidentsOnDate (analyzer, dateinput):
+    lst = om.values(analyzer['dateIndex'], dateinput, dateinput)
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+#---------------------------------------------------------------------------
+#REQ 1
 def getAccidentsDateSeverity (analyzer, initialDate, severity):
     accdate = om.get(analyzer['dateIndex'], initialDate)
     if accdate['key'] is not None:
@@ -150,6 +159,38 @@ def getAccidentsDateSeverity (analyzer, initialDate, severity):
         if numtotal is not None:
             return m.size(me.getValue(numtotal)['lstseverity'])
         return 0
+
+#---------------------------------------------------------------------------
+#REQ2
+def getAccidentsBeforeDate (analyzer, dateinput):
+    dateinputformatted = datetime.datetime.strptime(dateinput, '%Y-%m-%d')
+    earliestDate =str(minKey(analyzer))
+    dateformatted = datetime.datetime.strptime(earliestDate, '%Y-%m-%d')
+    result = getAccidentsByRange(analyzer, dateformatted.date(), dateinputformatted.date())
+    worstDayEver =dateMostAccidents(analyzer, dateformatted, dateinputformatted)
+    print ("Rango desde: [ ",earliestDate, " ] a [ ", dateinput," ]")
+    print("la fecha con mas accidentes fue:  " + str(worstDayEver))
+    print("\nTotal de accidentes en el rango de fechas: " + str(result))
+
+
+
+def dateMostAccidents(analyzer, initialDate, finalDate):
+
+    currentdate = initialDate
+    mostAccidents=0
+    resultDate= None
+
+    while currentdate < finalDate :
+        currentaccidents = getAccidentsOnDate(analyzer, currentdate.date())
+        if currentaccidents > mostAccidents:
+            mostAccidents= currentaccidents
+            resultDate= currentdate
+        currentdate = currentdate + datetime.timedelta(days=1) 
+    return resultDate
+
+#---------------------------------------------------------------------------
+
+
 
 
 
@@ -160,30 +201,22 @@ def getAccidentsByState(analyzer, stateInput):
 
 def accidentSize(analyzer):
     """
-    Número de accidentes en el catago
+    Número de accidentes en el catalogo
     """
     return lt.size(analyzer['accidents'])
 
 
 def indexHeight(analyzer):
-    """Numero de accidentes leido
-    """
     return om.height(analyzer['dateIndex'])
 
 def indexSize(analyzer):
-    """Numero de autores leido
-    """
     return om.size(analyzer['dateIndex'])
 
 def minKey(analyzer):
-    """Numero de autores leido
-    """
     return om.minKey(analyzer['dateIndex'])
 
 
 def maxKey(analyzer):
-    """Numero de autores leido
-    """
     return om.maxKey(analyzer['dateIndex'])
 
 
@@ -203,9 +236,9 @@ def compareIds (id1,id2):
 def compareDates (date1,date2):
     
     # compara los crimenes
-    if (date1.day==date2.day):
+    if (date1==date2):
         return 0
-    elif (date1.day>date2.day):
+    elif (date1>date2):
         return 1
     else:
         return -1

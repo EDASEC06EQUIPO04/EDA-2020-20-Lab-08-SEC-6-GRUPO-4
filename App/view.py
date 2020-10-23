@@ -229,10 +229,8 @@ while True:
         print("\nTotal de accidentes tipo 3: " + str(accidentsseverity3))
         accidentsseverity4 = controller.getAccidentsDateSeverity(cont, initialDate, "4") 
         print("\nTotal de accidentes tipo 4: " + str(accidentsseverity4))
-        
-        
-        #printAccidentOriginal (cont,lst)
-        input("Clic para continuar")
+
+        input("oprima tecla para continuar")
 
 
 
@@ -242,14 +240,11 @@ while True:
         #output: total de accidentes antes de la fecha
         #output fecha con mas accidentes
 
-        print("\nIngrese una fecha: ")
-        initialDate = input("Fecha Busqueda (YYYY-MM-DD): ")       
-        #finalDate = input("Rango Final (YYYY-MM-DD): ")
-        lst = controller.getAccidentsByRange(cont, initialDate, initialDate) 
-        print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
-        print (initialDate)
-        printAccidentAntesDe(cont,lst)
-        input("Clic para continuar")
+        #print("\nIngrese una fecha: ")
+        #initialDate = input("Fecha Busqueda (YYYY-MM-DD): ")      
+        initialDate="2016-08-09" 
+        result = controller.getAccidentsBeforeDate(cont, initialDate) 
+        input("oprima tecla para continuar")
 
     elif int(inputs[0]) == 5:
         #REQUERIMIENTO 3
@@ -267,7 +262,7 @@ while True:
         
         print ("Rango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
         print("\nTotal de crimenes en el rango de fechas: " + str(total))
-        input("oprima tecla para continuar")
+        input("\noprima tecla para continuar")
 
 
     elif int(inputs[0]) == 6:
