@@ -1,0 +1,23 @@
+changelog
+
+por requerimientos:
+
+carga de datos/general:
+temporalmente se unieron la creacion del arbol con el cargue para acelerar pruebas
+en general se redujo el numero de input() para acelerar pruebas
+se eliminaron comentarios excesivos y dead code para facilitar lectura
+las opciones de input en las pruebas se convirtieron en comentarios y se asigno una fecha arbitraria a la variable, otra vez para eficiencia en pruebas
+
+
+
+req 1:
+completo
+posible optimizar 
+se eliminaron todos los prints del view
+se crea una lista en el modelo con la consulta, se retorna tamaño de esta lista. repetido 3 veces para 3 categorias de severidad
+
+req 2
+completo
+este esta un poco mas elaborado pero todas las varaibles son self-explanatory
+la funcion de "get accidents on date" se puede utilizar paa cualquier fecha con un input y una feca (en formato date), se puede  implementar de manera mas limpia pero de momento utilize el atajo de rango de initial date a initial date
+por el momento los prints estan en el model, moverlos al view se puede pero no queria asignar todas las variable
