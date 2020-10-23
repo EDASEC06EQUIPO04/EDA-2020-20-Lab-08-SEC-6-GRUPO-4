@@ -21,6 +21,7 @@
  """
 import config
 from DISClib.ADT import list as lt
+from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import map as m
@@ -41,11 +42,12 @@ def newAnalyzer():
     # creo la lista para almacenar todos los accidentes, esto es cada fila del excel con sus 49 campos
     # crea un Cataolo de Analyzer, una lista para los accidentes y una Mapa Ordenado para las fechas
     analyzer={ 'accidents':None,
-               'dateIdndex':None
+               'dateIndex':None
             }
     analyzer['accidents']=lt.newList('SINGLE_LINKED',compareIds)
-    analyzer['dateIndex']=om.newMap(omaptype='BST',comparefunction=compareDates)
 
+    #analyzer['dateIndex']=om.newMap(omaptype='BST',comparefunction=compareDates)
+    analyzer['dateIndex']=om.newMap(omaptype='RBT',comparefunction=compareDates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -53,8 +55,11 @@ def newAnalyzer():
 def addAccident(analyzer, accident):
     """
     """
+    # crea solo el mapa 
     lt.addLast(analyzer['accidents'], accident)
+
     updateDateIndex(analyzer['dateIndex'], accident)
+    
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -66,16 +71,14 @@ def updateDateIndex(map, accident):
     se crea y se actualiza el indice de tipos de accidentes
     """
     occurreddate = accident['Start_Time']
-
-    accident_date = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')   
-
-    entry = om.get(map, accident_date.date())
+    occurreddate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    entry = om.get(map, occurreddate.date())
     if entry is None:
         datentry = newDataEntry(accident)
-        om.put(map, accident_date.date(), datentry)
+        om.put(map, occurreddate.date(), datentry)
     else:
         datentry = me.getValue(entry)
-   # addDateIndex(datentry, accident)
+    addDateIndex(datentry, accident)
     return map
 
 def addDateIndex(datentry, accident):
@@ -85,41 +88,41 @@ def addDateIndex(datentry, accident):
     el valor es una lista con los accidentes de dicho tipo en la fecha que
     se está consultando (dada por el nodo del arbol)
     """
-    lst = datentry['lst_accidents']
+    lst = datentry['lstaccidents']
     lt.addLast(lst, accident)
-    severity = datentry['severity']
-    sever = m.get(severity, accident['severity'])
+    severity = datentry['SeverityIndex']
+    sever = m.get(severity, accident['Severity'])
     if (sever is None):
-        entry = new_Accident_Entry(accident['severity'], accident)
-        lt.addLast(accident['severity'], accident)
-        m.put(accidentIndex, accident['severity'], entry)
+        entry = newSeverityEntry(accident["Severity"], accident)
+        lt.addLast(entry['lstseverity'], accident)
+        m.put(severity, accident['Severity'], entry)
     else:
         entry = me.getValue(sever)
-        lt.addLast(entry['lstOfAccidents'], accident)
+        lt.addLast(entry['lstseverity'], accident)
     return datentry
 
-def new_Accident_Entry(severity, accident):
+def newDataEntry(accident):
     """
     Crea una entrada en el indice por tipo de accident, es decir en
     la tabla de hash, que se encuentra en cada nodo del arbol.
     """
-    ofentry = {'accident1': None, 'lstOfAccidents': None}
-    ofentry['accident1'] = severity
-    ofentry['lstOfAccidents'] = lt.newList('SINGLELINKED', compareAccidents)
+    ofentry = {'SeverityIndex': None, 'lstaccidents': None}
+    ofentry['SeverityIndex'] = m.newMap(numelements=100,
+                                    maptype='PROBING',
+                                    comparefunction=compareSeverity)
+    ofentry['lstaccidents'] = lt.newList('SINGLELINKED', compareDates)
     return ofentry
 
 
-
-def newDataEntry(accident):
+def newSeverityEntry(AccSeverity, accident):
     """
     Crea una entrada en el indice por fechas, es decir en el arbol
     binario.
     """
-    entry = {'severityIndex': None, 'lst_accidents': None}
-    entry['severityIndex'] = m.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     comparefunction=compareSeverity)
-    entry['lst_accidents'] = lt.newList('SINGLE_LINKED', compareDates)
+
+    entry = {'severityIndex': None, 'lstseverity': None}
+    entry['severityIndex'] = AccSeverity
+    entry['lstseverity'] = lt.newList('SINGLE_LINKED', compareSeverity)
     return entry
 
 
@@ -127,20 +130,32 @@ def newDataEntry(accident):
 # Funciones de consulta
 # ==============================
 def getAccidentsByRange(analyzer, initialDate,finalDate):
-    """
-    Retorna el numero de crimenes en un rago de fechas.
-    """
-    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
-    """accidentDate=om.get(analyzer['dateIndex'], initialDate)
     
-    if accidentDate['key'] is not None:
-        offensemap = me.getValue(accidentDate)['severityIndex']
-        numoffenses = m.get(offensemap, offensecode)
-        if numoffenses is not None:
-            return m.size(me.getValue(numoffenses)['lst_accidents'])
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+
+
+def getAccidentsDateSeverity (analyzer, initialDate, severity):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        severitymap = me.getValue(accdate)['SeverityIndex']
+        numtotal = m.get(severitymap, severity)
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lstseverity'])
         return 0
-    """
-    return lst
+
+
+
+def getAccidentsByState(analyzer, stateInput):
+    lst= om.values(analyzer, [''])
+
 
 
 def accidentSize(analyzer):
@@ -188,9 +203,9 @@ def compareIds (id1,id2):
 def compareDates (date1,date2):
     
     # compara los crimenes
-    if (date1==date2):
+    if (date1.day==date2.day):
         return 0
-    elif (date1>date2):
+    elif (date1.day>date2.day):
         return 1
     else:
         return -1

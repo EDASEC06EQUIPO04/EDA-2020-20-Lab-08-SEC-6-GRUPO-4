@@ -27,6 +27,8 @@ from DISClib.DataStructures import listiterator as it
 from App import controller
 import datetime
 assert config
+from time import process_time 
+from math import acos, cos, sin, radians
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -40,22 +42,37 @@ operación seleccionada.
 # ___________________________________________________
 
 
-#crimefile = 'crime-utf8.csv'
-accidentFile='us_accidents_small.csv'
+#accidentFile='us_accidents_small.csv'
+accidentFile='us_accidents_dis_2016.csv'
+#accidentFile='US_Accidents_Dec19.csv'
+
+#-------------------------------
+#inicializando cont en none
+cont=None
+#--------------------------------
+
+def compareIds (id1,id2):
+    
+    # compara los crimenes
+    if (id1==id2):
+        return 0
+    elif (id1>id2):
+        return 1
+    else:
+        return -1
 
 
-
-def printAccident(info, lista):
-
+def printAccidentAntesDe(info, lista):
+    
         accidentCounter=0
 
         accidentRead=lt.getElement(info['accidents'],0) 
         print (accidentRead['Severity'])
-        print (lt.getElement(lst,0))
+        print (lt.getElement(lista,0))
         numAccidentes=controller.accidentSize(info)
-        for k in range (0, lt.size(lst)):
+        for k in range (0, lt.size(lista)):
             #print (lt.getElement(lst,k))                  #Aqui se imprimen los valores del mapa
-            dateCom=lt.getElement(lst,k)
+            dateCom=lt.getElement(lista,k)
             
             for i in range (0,numAccidentes):
             #for i in range (0,10):    
@@ -71,14 +88,55 @@ def printAccident(info, lista):
                 #print ("  k: ", k, "   v:", v, "  ", i, ": " , accidentRead['ID']," ", accidentRead['Severity']," ",oneDate1)
                 #print (dateCom, "-->",oneDate1)
                 #input("")
-                if str(dateCom)==str(oneDate1):     
+                if str(dateCom)>=str(oneDate1):     
                     print (dateCom, "-->", i, ": " , "ID: ", accidentRead['ID']," ", "Severidad: ",accidentRead['Severity'])
                     accidentCounter = accidentCounter+1
-        
-        print ("se encontraron ", accidentCounter ," accidentes en la fecha especificada")
-      
-        
+        accidentCounter = accidentCounter-1
+        print ("se encontraron ", accidentCounter ," accidentes antes de la fecha especificada")        
 
+
+def distancia (c1, c2):
+    c1= (radians(c1[0]), radians (c1[1]))
+    c2= (radians(c2[0]), radians (c2[1]))
+    dist=acos(sin(c1[0])*sin(c2[0])+cos(c1[0])*cos (c2[0])*cos(c1[1]-c2[1]))
+    return dist * 6371.01
+
+
+
+def printAccidentGeo(info, lista):
+    
+        #Coordenada (latitud, longitud)
+        la1=float(input("Digite la latitud_1: "))
+        lo1=float(input("Digite la longitud_1: "))
+        c1=(la1,lo1)
+        radio=float(input("Digite el numero de kilometros a la redonda para verificar: "))
+        #la=float(input("Digite la latitud_2: "))
+        #lo=float(input("Digite la longitud_2: "))
+        #c2=(la,lo)
+        #resp=distancia (c1,c2)
+        #print ("La distancia entrer las dos coordenadas es:" , resp)
+        accidentCounter=0
+
+        accidentRead=lt.getElement(info['accidents'],0) 
+        print (accidentRead['Start_Lat'], accidentRead['Start_Lng'])
+        
+        numAccidentes=controller.accidentSize(info)    
+        for i in range (0,numAccidentes):
+            accidentRead=lt.getElement(info['accidents'],i) 
+            la2=accidentRead['Start_Lat']
+            lo2=accidentRead['Start_Lng']
+            c2=(float(la2),float(lo2))
+            resp=distancia (c1,c2)
+            #print ("La distancia entrer las dos coordenadas es:" , resp)
+        
+            if resp<=50:     
+                accidentCounter = accidentCounter+1
+        
+        print ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")   
+        print ("")
+        print ("se encontraron ", accidentCounter ," accidentes en el radio dado")
+        input ("Clic para continuar")
+        
 
 # ___________________________________________________
 #  Menu principal
@@ -106,6 +164,7 @@ def printMenu():
 """
 Menu principal
 """
+
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar >> ')
@@ -114,28 +173,16 @@ while True:
 
         print("\nInicializando lista Analyzer y mapa ordenado dateIndex....")
         cont = controller.init()
-        #lt.addLast(cont['accidents'],"Dato de prueba de de la lista.. OKKKK")
-        #dato=lt.getElement(cont['accidents'],0) 
-
-        print (cont['accidents'])
-        #print (dato)
-
-        input("Ahora la mapa ordenado dateIndex")
-        print (cont['dateIndex'])
-        print ("")
-        input("Se acaba de crear el Catalogo Analyzer con su respectiva lista y un mapa ordenado tipo BST")
         # cont es el controlador que se usará de acá en adelante
-       
-
-    elif int(inputs[0]) == 2:
-
+        print (cont['accidents'])
+        print (cont['dateIndex'])
+        print ("Se acaba de crear el Catalogo Analyzer con su respectiva lista y un mapa ordenado tipo BST")
+        #-------------------------------------------------------------------------------------------------------
+        #este fragmento es exactamente igual al input 2, lo combine para agilizar pruebas
+        t1_start = process_time()
         print("\n Cargando información de accidentes ....\n")
 
-        controller.loadData(cont, accidentFile)
-        print (lt.getElement(cont['accidents'],0))
-        print (lt.getElement(cont['accidents'],controller.accidentSize(cont)))
-        #for i  in range (0,controller.accidentSize(cont)):
-        #   print (lt.getElement(cont['accidents'],i))
+        cont=controller.loadData(cont, accidentFile)
         print ("")
         print('Accidentes cargados: ' + str(controller.accidentSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
@@ -143,56 +190,134 @@ while True:
         print('Menor Llave: ' + str(controller.minKey(cont)))
         print('Mayor Llave: ' + str(controller.maxKey(cont)))
         print("")
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+        #-------------------------------------------------------------------------------------------------------
+    elif int(inputs[0]) == 2:
 
-        #accidentRead=lt.getElement(cont['accidents'],0) 
-        #print (accidentRead['Severity'])
-        input("Clic para continuar")
-       
+        t1_start = process_time()
+        print("\n Cargando información de accidentes ....\n")
+
+        cont=controller.loadData(cont, accidentFile)
+        print ("")
+        print('Accidentes cargados: ' + str(controller.accidentSize(cont)))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+        print('Menor Llave: ' + str(controller.minKey(cont)))
+        print('Mayor Llave: ' + str(controller.maxKey(cont)))
+        print("")
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+
+
+
+
 
     elif int(inputs[0]) == 3:
+        #REQUERIMIENTO 1
+        #input: fecha especifica
+        #output:cantidad de accidentes por severidad (range from 2-4)
         print("\nIngrese una fecha para buscar accidentes: ")
+
+        #initialDate = input("Fecha Busqueda (YYYY-MM-DD): ") 
+        initialDate="2016-08-09"
+        initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d') 
+
+        accidentsseverity2 = controller.getAccidentsDateSeverity(cont, initialDate, "2") 
+        print("\nTotal de accidentes tipo 2: " + str(accidentsseverity2))
+        accidentsseverity3 = controller.getAccidentsDateSeverity(cont, initialDate, "3") 
+        print("\nTotal de accidentes tipo 3: " + str(accidentsseverity3))
+        accidentsseverity4 = controller.getAccidentsDateSeverity(cont, initialDate, "4") 
+        print("\nTotal de accidentes tipo 4: " + str(accidentsseverity4))
         
-        initialDate="2000-00-00"
-        #finalDate= "2000-00-00"
+        
+        #printAccidentOriginal (cont,lst)
+        input("Clic para continuar")
+
+
+
+    elif int(inputs[0]) == 4:
+        #REQUERIMIENTO 2
+        #input: fecha
+        #output: total de accidentes antes de la fecha
+        #output fecha con mas accidentes
+
+        print("\nIngrese una fecha: ")
         initialDate = input("Fecha Busqueda (YYYY-MM-DD): ")       
         #finalDate = input("Rango Final (YYYY-MM-DD): ")
         lst = controller.getAccidentsByRange(cont, initialDate, initialDate) 
-        
-        #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate)
-
-        #for k,v in lst.items():
-           #print (lt.getElement(lst,0))
-        #   print (v)
-        
-        printAccident(cont,lst)
-
-        """tamLista= lt.size(lst)   
-        for i in range (1, tamLista):
-               print (lt.getElement(lst,i))
-        
-      
-
-        """
+        printAccidentAntesDe(cont,lst)
         input("Clic para continuar")
 
-
-
     elif int(inputs[0]) == 5:
-        print("\nRequerimiento No 1 del reto 3: ")
+        #REQUERIMIENTO 3
+        #input: fecha inicial
+        #input: fecha final
+        #output: total de accidentes en rango
+        #output categoria de accidentes mas reportada
 
-        print("\nBuscando crimenes en un rango de fechas: ")
+        print("\nIngrese una fecha para buscar accidentes antes de esta: ")
+        initialDate="2016-08-09"
+        finalDate= "2016-09-15"
+        #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
+        #finalDate = input("Rango Final (YYYY-MM-DD): ")
+        total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
         
-        initialDate="2000-00-00"
-        finalDate= "2000-00-00"
-        initialDate = input("Rango Inicial (YYYY-MM-DD): ")       
-        finalDate = input("Rango Final (YYYY-MM-DD): ")
+        print ("Rango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
+        print("\nTotal de crimenes en el rango de fechas: " + str(total))
+        input("oprima tecla para continuar")
+
+
+    elif int(inputs[0]) == 6:
+        #REQUERIMIENTO 4
+        #input: fecha inicial
+        #input: fecha final
+        #output: estado con mas accidentes en rango
+        #output: fecha con mas accidentes
+
+        #use OH to test
+        print("\nRequerimiento No 4 del reto 3: ")
+        print("\nBuscando accidentes en un estado: ")
+
         lst = controller.getAccidentsByRange(cont, initialDate,finalDate) 
+        lst = controller.getAccidentsByState (cont, stateSearched)
         
         #print (lst)
         print("\nTotal de llaves en el rango: " + str(lt.size(lst)))
         print (initialDate,finalDate)
+    elif int(inputs[0]) == 8:
+        print("\nRequerimiento No 6 del reto 3: ")
+        lst=[]
+        printAccidentGeo(cont,lst)
+
+    elif int(inputs[0]) == 7:
+        #REQUERIMIENTO 5
+        #input: hora inicial
+        #input: hora final
+        #output: total accidentes agrupados severidad.  agrupar inputs de hora en clusters de 30 min
+        #output: porcentaje de esta severidad en relacion al total
+
+        #use OH to test
+        pass
+
+    elif int(inputs[0]) == 8:
+        #REQUERIMIENTO 6
+        #input: longitud
+        #input: latitud
+        #input: radio busqueda 
+        #output: total accidentes
+        #output: total accidentes agruapdos por dia de la semana
+
+        #use OH to test
+        pass
+
+    elif int(inputs[0]) == 9:
+        #same shit done in 1 to 6 but use the large dataset
+
+        pass
+
 
     else:
         sys.exit(0)

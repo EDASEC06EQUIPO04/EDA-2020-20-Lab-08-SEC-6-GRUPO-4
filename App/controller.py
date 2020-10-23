@@ -24,6 +24,8 @@ import config as cf
 from App import model
 import datetime
 import csv
+import copy
+from DISClib.ADT import list as lt
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -55,23 +57,92 @@ def loadData(analyzer, accidentsfile):
     """
     Carga los datos de los archivos CSV en el modelo
     """
+    #accidentes=[]
     accidentsfile = cf.data_dir + accidentsfile
+    """
+    archivo = open(accidentsfile,'r')
+    archivo.readline()
+    linea = archivo.readline()
+    while len(linea)>0:
+        datos=linea.split(",")
+        accidente=crear_accidente(datos[0],datos[1],datos[2],datos[3],datos[4],datos[5].rstrip("\n"))
+        accidentes.append(accidente)
+        #model.addAccident(analyzer, accidente)
+    """
+    #accidentsfile = cf.data_dir + accidentsfile
     input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),delimiter=",")
-    for accident in input_file:
-        model.addAccident(analyzer, accident)
-    return analyzer
+    for accidente in input_file:
+
+        """
+        accidente ={
+
+        "ID":accidente['ID'],
+        "Severity":accidente['Severity'],
+        "Start_Time":accidente['Start_Time'],
+        "Start_Lat":accidente['Start_Lat'],
+        "Start_Lng":accidente['Start_Lng'],
+        "State":accidente['State']}
+        """
+
+        #accidente1=copy.deepcopy(accidente)
+
+        #accidente1.values= {accident['ID'],accident['Severity'],accident['Severity'],accident['Start_Lat'],accident['Start_Lat'],accident['State']}
+        model.addAccident(analyzer, accidente)
+    
+    #input ("Clic para continuar")
+    return analyzer 
+
+def compareIds (id1,id2):
+    
+    # compara los crimenes
+    if (id1==id2):
+        return 0
+    elif (id1>id2):
+        return 1
+    else:
+        return -1
+
+def crear_accidente(ID:str,Severity:int,Start_Time:datetime,Start_Lat:None,Start_Lng:None,State:str)-> dict:
+    
+    Start_Time=datetime.datetime.now()
+    Start_Time = datetime.datetime.strftime(Start_Time, '%Y-%m-%d %H:%M:%S')
+
+    #Start_Time = datetime.datetime.strptime(Start_Time, "%a %b %d %H:%M:%S %Y")
+    
+
+
+    return {
+    "ID":ID,
+    "Severity":Severity,
+    "Start_Time":Start_Time,
+    "Start_Lat":Start_Lat,
+    "Start_Lng":Start_Lng,
+    "State":State}
+
+
+
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
 
-def getAccidentsByRange(analyzer, initialDate,finalDate):
-    """
-    Retorna el total de crimenes en un rango de fechas
-    """
+def getAccidentsByRange(analyzer, initialDate,finalDate):    
+    #esta funcion recibe strings, devuelve formatos date
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    
     return model.getAccidentsByRange(analyzer, initialDate.date(),finalDate.date())
+
+
+
+
+
+def getAccidentsDateSeverity(analyzer, Date, severity):    
+    return model.getAccidentsDateSeverity(analyzer, Date.date(), severity)
+
+
+def getAccidentsByState (analyzer, stateInput):
+
+    return model.getAccidentsByState(analyzer, stateInput)
+
 
 def accidentSize(analyzer):
     """
