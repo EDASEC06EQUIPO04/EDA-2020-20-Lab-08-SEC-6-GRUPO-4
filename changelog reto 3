@@ -13,27 +13,44 @@ las opciones de input en las pruebas se convirtieron en comentarios y se asigno 
 
 
 req 1:
-completo
+COMPLETO
 posible optimizar 
 se eliminaron todos los prints del view
 se crea una lista en el modelo con la consulta, se retorna tamaño de esta lista. repetido 3 veces para 3 categorias de severidad
 
 req 2
-completo
+COMPLETO
 este esta un poco mas elaborado pero todas las varaibles son self-explanatory
 la funcion de "get accidents on date" se puede utilizar paa cualquier fecha con un input y una feca (en formato date), se puede  implementar de manera mas limpia pero de momento utilize el atajo de rango de initial date a initial date
 por el momento los prints estan en el model, moverlos al view se puede pero no queria asignar todas las variable
 
-req 3 
+req 3
+COMPLETO
 para el caso del 3 preguntan por categorias, pero no estoy seguro a que se refieren. de momento lo implemento con severity como categoria
 ya revise en el slack, si se referian a severidad
 requirement implemented, this one is inefficient as shit but it is functional
 currently the thing is runnning trought the list 3 times over looking for 3 different cats, its fully functional but hilariously improvable in terms of efficiency
 
-req 4 paretially complete
+req 4 
+partially complete
+TBD: function to iterate all possible states over the implemented search functions
+de momento se construyo el nuevop hashmap y la funcion esta retornando el valor de los accidentes para un solo estado de prueba (Ohio) en el rango
+hay que elaborar un loop que pase todos los estados por esste conteo y retorne el mas alto
+el rango ya esta funcionando como es
+
 accidents in date range are being prinnted succesfully.
 regarding state with highest accidents: 
 -load functions was modified to create a hasmap sorted by states
 -all pertinente functions concerning this change were modified
 -functions for counting accidents in a given state and a range of dates in a state are implemented
-TBD: function to iterate all possible states over this function and return highest
+
+req5
+unimplemented
+
+req6 
+unimplemented
+
+req 7 
+lol
+
+
