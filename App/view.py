@@ -239,42 +239,36 @@ while True:
 
         print("\nBuscando accidentes en un estado: ")
 
-        initialDate="2016-02-08"
-        finalDate= "2017-01-26"
-        #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
-        #finalDate = input("Rango Final (YYYY-MM-DD): ")
+        initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
+        finalDate = input("Rango Final (YYYY-MM-DD): ")
         dia=controller.getDateMostAccidents(cont, initialDate, finalDate) 
-        #print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
+        print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
         print("\nEl dia con mas accidentes fue: " + str(dia) + "\n")
-        #controller.getAccidentsRangeState(cont, initialDate, finalDate) 
 
-        """"
-        #print(total["first"]["info"])
-         
+        total = controller.getAccidentsByRange(cont, initialDate, finalDate)        
         iterator = it.newIterator(total)
-        hola=iterator['iterable_lst']["first"]["info"]['SeverityIndex']['table']["elements"]
-        
-        print(hola)
-        """
-
-        total = controller.getAccidentsByRange(cont, initialDate, finalDate)
-        nodo=total["first"]["info"]['SeverityIndex']["table"]['elements']
         aux={}
-
-        for x in nodo:
-            if x["value"] is not None:
-                state=x["value"]['lstseverity']['first']['info']["State"]
-                if state not in aux:
-                    aux[state]=1
-                else:
-                    aux[state]+=1
+        while it.hasNext(iterator):
+            acci=it.next(iterator)
             
-        print(aux)
-   
-
-
-
+            ite=acci['SeverityIndex']['table']['elements']
+            for x in ite:
+                if x["value"] is not None:
+                    state=x["value"]['lstseverity']['first']['info']["State"]
+                    if state not in aux:
+                        aux[state]=1
+                    else:
+                        aux[state]+=1
         
+        mayor=""
+        i=0
+        for x in aux:
+            if aux[x]>= i:
+                mayor=x
+                i= aux[x]
+
+        print("\nEl estado con mas accidentes fue: " ,mayor, "con: ", i, "accidentes" "\n")
+            
 
     elif int(inputs[0]) == 7:
         #REQUERIMIENTO 5
