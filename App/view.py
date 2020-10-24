@@ -245,7 +245,7 @@ while True:
         print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
         print("\nEl dia con mas accidentes fue: " + str(dia) + "\n")
 
-        total = controller.getAccidentsByRange(cont, initialDate, finalDate)        
+        total = controller.getAccidentsByRange2(cont, initialDate, finalDate)        
         iterator = it.newIterator(total)
         aux={}
         while it.hasNext(iterator):

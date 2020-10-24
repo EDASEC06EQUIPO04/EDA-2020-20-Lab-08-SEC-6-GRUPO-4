@@ -155,15 +155,23 @@ def newStateEntry(AccState, accident):
 def getAccidentsByRange(analyzer, initialDate,finalDate):
     
     lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
-    """
+    
     lstiterator = it.newIterator(lst)
     totalAccidents = 0
     while (it.hasNext(lstiterator)):
         lstdate = it.next(lstiterator)
         totalAccidents += lt.size(lstdate['lstaccidents'])
     return totalAccidents
-    """
+    
     return lst
+
+
+def getAccidentsByRange2(analyzer, initialDate,finalDate):
+    
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+    
+    return lst
+
 #this is the laziest way of solving this, but if it works it aint stupid
 def getAccidentsOnDate (analyzer, dateinput):
     lst = om.values(analyzer['dateIndex'], dateinput, dateinput)
