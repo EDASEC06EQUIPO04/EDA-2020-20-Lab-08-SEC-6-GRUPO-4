@@ -139,7 +139,10 @@ def getAccidentsRangeState(analyzer, initialdate, finaldate):
 def getAccidentsBeforeDate(analyzer, dateinput):
     return model.getAccidentsBeforeDate(analyzer, dateinput)
 
-
+def getDateMostAccidents(analyzer,initialDate,finalDate):
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    return model.dateMostAccidents(analyzer, initialDate,finalDate)
 
 def accidentHighestCat(cat1, cat2, cat3):
     return model.accidentHighestCat()
