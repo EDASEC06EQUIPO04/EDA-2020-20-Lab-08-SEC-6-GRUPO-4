@@ -225,15 +225,35 @@ while True:
 
         print("\nBuscando accidentes en un estado: ")
 
-        #initialDate="2016-06-21"
-        #finalDate= "2016-06-22"
         initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
         finalDate = input("Rango Final (YYYY-MM-DD): ")
-        total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
+        dia=controller.getDateMostAccidents(cont, initialDate, finalDate) 
         print ("\nRango desde: [ ",initialDate, " ] a [ ", finalDate," ]")
-        print("\nTotal de accidentes en el rango de fechas: " + str(total) + "\n")
-        controller.getAccidentsRangeState(cont, initialDate, finalDate) 
+        print("\nEl dia con mas accidentes fue: " + str(dia) + "\n")
 
+        total = controller.getAccidentsByRange2(cont, initialDate, finalDate)        
+        iterator = it.newIterator(total)
+        aux={}
+        while it.hasNext(iterator):
+            acci=it.next(iterator)
+            
+            ite=acci['SeverityIndex']['table']['elements']
+            for x in ite:
+                if x["value"] is not None:
+                    state=x["value"]['lstseverity']['first']['info']["State"]
+                    if state not in aux:
+                        aux[state]=1
+                    else:
+                        aux[state]+=1
+        
+        mayor=""
+        i=0
+        for x in aux:
+            if aux[x]>= i:
+                mayor=x
+                i= aux[x]
+
+        print("\nEl estado con mas accidentes fue: " ,mayor, "con: ", i, "accidentes" "\n")
 
 
 
