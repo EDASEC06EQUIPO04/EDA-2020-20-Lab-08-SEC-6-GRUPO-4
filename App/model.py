@@ -88,42 +88,65 @@ def addDateIndex(datentry, accident):
     el valor es una lista con los accidentes de dicho tipo en la fecha que
     se está consultando (dada por el nodo del arbol)
     """
-    lst = datentry['lst_accidents']
+    lst = datentry['lstaccidents']
     lt.addLast(lst, accident)
     severity = datentry['SeverityIndex']
+    state = datentry['StateIndex']
     sever = m.get(severity, accident['Severity'])
+    stateToAdd = m.get(state,accident['State'])
     if (sever is None):
-        entry = newAccidentEntry(accident["Severity"], accident)
-        lt.addLast(entry['lstOfAccidents'], accident)
+        entry = newSeverityEntry(accident["Severity"], accident)
+        lt.addLast(entry['lstseverity'], accident)
         m.put(severity, accident['Severity'], entry)
     else:
         entry = me.getValue(sever)
-        lt.addLast(entry['lstOfAccidents'], accident)
+        lt.addLast(entry['lstseverity'], accident)
+
+    if(stateToAdd is None):
+        entry= newStateEntry(accident['State'], accident)
+        lt.addLast(entry['lststate'], accident)
+        m.put(state, accident['State'], entry)
+    else:
+        entry = me.getValue(stateToAdd)
+        lt.addLast(entry['lststate'], accident)
     return datentry
+
+
+
 
 def newDataEntry(accident):
     """
     Crea una entrada en el indice por tipo de accident, es decir en
     la tabla de hash, que se encuentra en cada nodo del arbol.
     """
-    ofentry = {'SeverityIndex': None, 'lst_accidents': None}
-    ofentry['SeverityIndex'] = m.newMap(numelements=100,
-                                     maptype='PROBING',
-                                     comparefunction=compareSeverity)
-    ofentry['lst_accidents'] = lt.newList('SINGLELINKED', compareDates)
+    ofentry = {'SeverityIndex': None, 'lstaccidents': None}
+    ofentry['SeverityIndex'] = m.newMap(numelements=0,
+                                    maptype='PROBING',
+                                    comparefunction=compareSeverity)
+    ofentry ['StateIndex'] = m.newMap(numelements=10, maptype= 'PROBING', comparefunction= compareStates)
+    ofentry['lstaccidents'] = lt.newList('SINGLELINKED', compareDates)
     return ofentry
 
 
-def newAccidentEntry(AccSeverity, accident):
+def newSeverityEntry(AccSeverity, accident):
     """
     Crea una entrada en el indice por fechas, es decir en el arbol
     binario.
     """
 
-    entry = {'severityIndex': None, 'lstOfAccidents': None}
+    entry = {'severityIndex': None, 'lstseverity': None}
     entry['severityIndex'] = AccSeverity
-    entry['lstOfAccidents'] = lt.newList('SINGLE_LINKED', compareSeverity)
+    entry['lstseverity'] = lt.newList('SINGLE_LINKED', compareSeverity)
     return entry
+
+
+def newStateEntry(AccState, accident):
+    entry = {'sateIndex': None, 'lststate': None}
+    entry['statetyIndex'] = AccState
+    entry['lststate'] = lt.newList('SINGLE_LINKED', compareStates)
+    return entry
+
+
 
 
 # ==============================
@@ -132,47 +155,188 @@ def newAccidentEntry(AccSeverity, accident):
 def getAccidentsByRange(analyzer, initialDate,finalDate):
     
     lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
-
+    """
     lstiterator = it.newIterator(lst)
-    totAC = 0
-
+    totalAccidents = 0
     while (it.hasNext(lstiterator)):
         lstdate = it.next(lstiterator)
-        totAC += lt.size(lstdate['lstcrimes'])
-    return totAC
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+    """
+    return lst
+#this is the laziest way of solving this, but if it works it aint stupid
+def getAccidentsOnDate (analyzer, dateinput):
+    lst = om.values(analyzer['dateIndex'], dateinput, dateinput)
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+#---------------------------------------------------------------------------
+#REQ 1
+def getAccidentsDateSeverity (analyzer, initialDate, severity):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        severitymap = me.getValue(accdate)['SeverityIndex']
+        numtotal = m.get(severitymap, severity)
+
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lstseverity'])
+        return 0
+
+#---------------------------------------------------------------------------
+#REQ2
+def getAccidentsBeforeDate (analyzer, dateinput):
+    dateinputformatted = datetime.datetime.strptime(dateinput, '%Y-%m-%d')
+    earliestDate =str(minKey(analyzer))
+    dateformatted = datetime.datetime.strptime(earliestDate, '%Y-%m-%d')
+    result = getAccidentsByRange(analyzer, dateformatted.date(), dateinputformatted.date())
+    worstDayEver =dateMostAccidents(analyzer, dateformatted, dateinputformatted)
+    accidentsWorstDay = getAccidentsOnDate (analyzer, worstDayEver.date())
+    print ("\nRango desde: [ ",earliestDate, " ] a [ ", dateinput," ]")
+    print("\nTotal de accidentes en el rango de fechas: " + str(result)+ "\n")
+    print("\nla fecha con mas accidentes fue:  " + str(worstDayEver))
+    print("\ntotal de accidentes en " + str(worstDayEver) +  " :  " + str(accidentsWorstDay))
 
 
-def getAccidentsByState(analyzer, stateInput):
-    lst= om.values(analyzer, [''])
+def dateMostAccidents(analyzer, initialDate, finalDate):
+    currentdate = initialDate
+    mostAccidents=0
+    resultDate= None
+
+    while currentdate < finalDate :
+        currentaccidents = getAccidentsOnDate(analyzer, currentdate.date())
+        if currentaccidents > mostAccidents:
+            mostAccidents= currentaccidents
+            resultDate= currentdate
+        currentdate = currentdate + datetime.timedelta(days=1) 
+    return resultDate
+
+#---------------------------------------------------------------------------
+#REQ3
+#todo lo demas que requiere este ya esta en el req 1 y en la funcion general de find in range
+def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):
+    currentdate = initialdate
+    accidentsCat2=0
+    accidentsCat3=0
+    accidentsCat4=0
+
+    while currentdate < finaldate :
+        #only 3 possible categories exist, as the possible iterators are of such a  small size explicitly stating them as a str facilitates readability of the code
+        accidentsCat2 = accidentsCat2 + getAccidentsDateSeverity(analyzer, currentdate, "2")
+        accidentsCat3 = accidentsCat3 + getAccidentsDateSeverity(analyzer, currentdate, "3")
+        accidentsCat4 = accidentsCat4 + getAccidentsDateSeverity(analyzer, currentdate, "4")
+
+        currentdate = currentdate + datetime.timedelta(days=1)  
+    accidentHighestCat(accidentsCat2, accidentsCat3, accidentsCat4)
+
+
+
+def accidentHighestCat(cat1, cat2, cat3):
+    largest = max(cat1, cat2, cat3)
+    if largest == cat1 :
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat1)+ " accidentes")
+    elif largest == cat2:
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat2)+ " accidentes")
+    else :
+        print("la categoria con mas accidentes es la severidad 2")
+        print("la categoria tiene " + str(cat3)+ " accidentes")
+
+#---------------------------------------------------------------------------
+#req 4
+def getAccidentsDateState (analyzer, initialDate, stateinpt):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        statemap = me.getValue(accdate)['StateIndex']
+        numtotal = m.get(statemap, stateinpt)
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lststate'])
+        return 0
+
+
+def getAccidentsRangeState (analyzer, initialdate, finaldate):
+    highesState=0
+    currentdate = initialdate
+
+    while currentdate < finaldate :
+        highesState = highesState + getAccidentsDateState(analyzer, currentdate, "OH")
+        currentdate = currentdate + datetime.timedelta(days=1) 
+    print(highesState)
+
+#---------------------------------------------------------------------------------------
+def getAccidentsHourRange (analyzer, initialtime, finaltime, lowrange, highrange):
+    print("rango de tiempo:")
+    print(initialtime.strftime('%H:%M:%S'))
+    print(finaltime.strftime('%H:%M:%S'))
+
+    print("rango de fechas:")
+    print(lowrange)
+    print(highrange)
+    
+    #resultlistcat2 =lt.newList(datastructure= 'SINGLE_LINKED')
+    resultlistcat2 =0
+    resultlistcat3 =lt.newList(datastructure= 'SINGLE_LINKED')
+    resultlistcat4 =lt.newList(datastructure= 'SINGLE_LINKED')
+    currentdate = lowrange
+
+    severity = "2"
+    while currentdate < highrange:
+        temptotal = int(dateSeverity(analyzer, currentdate, severity))
+        resultlistcat2 = resultlistcat2 + temptotal
+    print (resultlistcat2)
+
+
+
+
+def getAccidentsByRangeHour(analyzer, initialDate,finalDate, initialtime, finaltime):
+    
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+
+
+
+def dateSeverity(analyzer, initialDate, severity):
+    accdate = om.get(analyzer['dateIndex'], initialDate)
+    if accdate['key'] is not None:
+        severitymap = me.getValue(accdate)['SeverityIndex']
+        numtotal = m.get(severitymap, severity)
+        if numtotal is not None:
+            return m.size(me.getValue(numtotal)['lstseverity'])
+        return 0
+
+
+
+    # this is a variation of the get accidents date severity
+
 
 
 
 def accidentSize(analyzer):
     """
-    Número de accidentes en el catago
+    Número de accidentes en el catalogo
     """
     return lt.size(analyzer['accidents'])
 
 
 def indexHeight(analyzer):
-    """Numero de accidentes leido
-    """
     return om.height(analyzer['dateIndex'])
 
 def indexSize(analyzer):
-    """Numero de autores leido
-    """
     return om.size(analyzer['dateIndex'])
 
 def minKey(analyzer):
-    """Numero de autores leido
-    """
     return om.minKey(analyzer['dateIndex'])
 
 
 def maxKey(analyzer):
-    """Numero de autores leido
-    """
     return om.maxKey(analyzer['dateIndex'])
 
 
@@ -192,9 +356,9 @@ def compareIds (id1,id2):
 def compareDates (date1,date2):
     
     # compara los crimenes
-    if (date1.day==date2.day):
+    if (date1==date2):
         return 0
-    elif (date1.day>date2.day):
+    elif (date1>date2):
         return 1
     else:
         return -1
@@ -221,6 +385,15 @@ def compareSeverity(severity1, severity2):
     if (severity1 == sever):
         return 0
     elif (severity1 > sever):
+        return 1
+    else:
+        return -1
+
+def compareStates ( state1, state2):
+    sever = me.getKey(state2)
+    if (state1 == sever):
+        return 0
+    elif (state1 > sever):
         return 1
     else:
         return -1
