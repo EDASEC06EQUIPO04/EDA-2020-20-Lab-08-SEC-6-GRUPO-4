@@ -24,6 +24,7 @@ import config as cf
 from App import model
 import datetime
 import csv
+import copy
 from DISClib.ADT import list as lt
 
 """
@@ -56,39 +57,11 @@ def loadData(analyzer, accidentsfile):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    #accidentes=[]
+
     accidentsfile = cf.data_dir + accidentsfile
-    """
-    archivo = open(accidentsfile,'r')
-    archivo.readline()
-    linea = archivo.readline()
-    while len(linea)>0:
-        datos=linea.split(",")
-        accidente=crear_accidente(datos[0],datos[1],datos[2],datos[3],datos[4],datos[5].rstrip("\n"))
-        accidentes.append(accidente)
-        #model.addAccident(analyzer, accidente)
-    """
-    #accidentsfile = cf.data_dir + accidentsfile
     input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),delimiter=",")
-    for accident in input_file:
-         
-        accidente ={
-
-        "ID":accident['ID'],
-        "Severity":accident['Severity'],
-        "Start_Time":accident['Start_Time'],
-        "Start_Lat":accident['Start_Lat'],
-        "Start_Lng":accident['Start_Lng'],
-        "State":accident['State']}
-        
-        accidente1=lt.newList('SINGLE_LINKED',compareIds)
-        #'ARRAY_LIST' SINGLE_LINKED
-        accidente1=accident
-
-        #accidente1.values= {accident['ID'],accident['Severity'],accident['Severity'],accident['Start_Lat'],accident['Start_Lat'],accident['State']}
-        model.addAccident(analyzer, accidente1)
-    
-    #input ("Clic para continuar")
+    for accidente in input_file:
+        model.addAccident(analyzer, accidente)
     return analyzer 
 
 def compareIds (id1,id2):
@@ -108,8 +81,6 @@ def crear_accidente(ID:str,Severity:int,Start_Time:datetime,Start_Lat:None,Start
 
     #Start_Time = datetime.datetime.strptime(Start_Time, "%a %b %d %H:%M:%S %Y")
     
-
-
     return {
     "ID":ID,
     "Severity":Severity,
@@ -124,19 +95,68 @@ def crear_accidente(ID:str,Severity:int,Start_Time:datetime,Start_Lat:None,Start
 #  Funciones para consultas
 # ___________________________________________________
 
-def getAccidentsByRange(analyzer, initialDate,finalDate):
-
+def getAccidentsByRange(analyzer, initialDate,finalDate):    
+    #esta funcion recibe strings, devuelve formatos date
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    
     return model.getAccidentsByRange(analyzer, initialDate.date(),finalDate.date())
 
 
+def getAccidentsByRangeHour(analyzer, initialDate,finalDate, initialtime, finaltime):
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+
+    initialtime = datetime.datetime.strptime(initialtime, '%H:%M:%S')
+    finaltime = datetime.datetime.strptime(finaltime, '%H:%M:%S')
+
+    return model.getAccidentsByRangeHour(analyzer, initialDate.date(),finalDate.date(), initialtime.date(), finaltime.date())
+
+
+
+def getAccidentsDateSeverity(analyzer, Date, severity): 
+    Date = datetime.datetime.strptime(Date, '%Y-%m-%d')    
+    return model.getAccidentsDateSeverity(analyzer, Date.date(), severity)
+
+def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):  
+    initialdate = datetime.datetime.strptime(initialdate, '%Y-%m-%d')
+    finaldate = datetime.datetime.strptime(finaldate, '%Y-%m-%d')
+    return model.getAccidentsRangeSeverity(analyzer, initialdate.date(), finaldate.date())
+
+
+def getAccidentsRangeState(analyzer, initialdate, finaldate):
+    initialdate = datetime.datetime.strptime(initialdate, '%Y-%m-%d')
+    finaldate = datetime.datetime.strptime(finaldate, '%Y-%m-%d')
+    return model.getAccidentsRangeState(analyzer, initialdate.date(), finaldate.date())
+
+
+def getAccidentsBeforeDate(analyzer, dateinput):
+    return model.getAccidentsBeforeDate(analyzer, dateinput)
+
+
+
+def accidentHighestCat(cat1, cat2, cat3):
+    return model.accidentHighestCat()
 
 
 def getAccidentsByState (analyzer, stateInput):
 
     return model.getAccidentsByState(analyzer, stateInput)
+
+
+def getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange):
+    lowrange = datetime.datetime.strptime(lowrange, '%Y-%m-%d')
+    highrange = datetime.datetime.strptime(highrange, '%Y-%m-%d')
+    
+
+
+    initialtime = datetime.datetime.strptime(initialtime, '%H:%M:%S')
+    finaltime = datetime.datetime.strptime(finaltime, '%H:%M:%S')
+    model.getAccidentsHourRange (cont, initialtime, finaltime, lowrange.date(), highrange.date())
+
+#//-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
+
+
 
 
 def accidentSize(analyzer):
