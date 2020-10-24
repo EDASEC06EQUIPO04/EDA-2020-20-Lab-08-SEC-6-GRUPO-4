@@ -118,12 +118,21 @@ def getAccidentsByRangeHour(analyzer, initialDate,finalDate, initialtime, finalt
 
     return model.getAccidentsByRangeHour(analyzer, initialDate.date(),finalDate.date(), initialtime.date(), finaltime.date())
 
+def getDateMostAccidents(analyzer,initialDate,finalDate):
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    return model.dateMostAccidents(analyzer, initialDate,finalDate)
 
 
 def getAccidentsDateSeverity(analyzer, Date, severity): 
     Date = datetime.datetime.strptime(Date, '%Y-%m-%d')    
     return model.getAccidentsDateSeverity(analyzer, Date.date(), severity)
 
+def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):  
+    initialdate = datetime.datetime.strptime(initialdate, '%Y-%m-%d')
+    finaldate = datetime.datetime.strptime(finaldate, '%Y-%m-%d')
+    return model.getAccidentsRangeSeverity(analyzer, initialdate.date(), finaldate.date())
+    
 def getAccidentsRangeSeverity(analyzer, initialdate, finaldate):  
     initialdate = datetime.datetime.strptime(initialdate, '%Y-%m-%d')
     finaldate = datetime.datetime.strptime(finaldate, '%Y-%m-%d')
@@ -139,10 +148,7 @@ def getAccidentsRangeState(analyzer, initialdate, finaldate):
 def getAccidentsBeforeDate(analyzer, dateinput):
     return model.getAccidentsBeforeDate(analyzer, dateinput)
 
-def getDateMostAccidents(analyzer,initialDate,finalDate):
-    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
-    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    return model.dateMostAccidents(analyzer, initialDate,finalDate)
+
 
 def accidentHighestCat(cat1, cat2, cat3):
     return model.accidentHighestCat()
@@ -162,6 +168,9 @@ def getAccidentsHourRange (cont, initialtime, finaltime, lowrange, highrange):
     initialtime = datetime.datetime.strptime(initialtime, '%H:%M:%S')
     finaltime = datetime.datetime.strptime(finaltime, '%H:%M:%S')
     model.getAccidentsHourRange (cont, initialtime, finaltime, lowrange.date(), highrange.date())
+
+
+
 
 #//-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
