@@ -239,8 +239,8 @@ while True:
 
         print("\nBuscando accidentes en un estado: ")
 
-        initialDate="2016-08-09"
-        finalDate= "2016-09-15"
+        initialDate="2016-06-21"
+        finalDate= "2016-06-22"
         #initialDate = input("Fecha Inicial (YYYY-MM-DD): ")       
         #finalDate = input("Rango Final (YYYY-MM-DD): ")
         total = controller.getAccidentsByRange(cont, initialDate, finalDate) 
@@ -278,7 +278,7 @@ while True:
 
 
 
-        print("\nTotal de accidentes en las hoars especificada: " + str(hourtotal) + "\n")
+        print("\nTotal de accidentes en las hoars especificada: " + str(totalhours) + "\n")
 
 
         
