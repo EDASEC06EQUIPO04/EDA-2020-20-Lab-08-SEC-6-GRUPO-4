@@ -102,6 +102,13 @@ def getAccidentsByRange(analyzer, initialDate,finalDate):
     return model.getAccidentsByRange(analyzer, initialDate.date(),finalDate.date())
 
 
+def getAccidentsByRange2(analyzer, initialDate,finalDate):    
+    #esta funcion recibe strings, devuelve formatos date
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    return model.getAccidentsByRange2(analyzer, initialDate.date(),finalDate.date())
+   
+   
 def getAccidentsByRangeHour(analyzer, initialDate,finalDate, initialtime, finaltime):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
