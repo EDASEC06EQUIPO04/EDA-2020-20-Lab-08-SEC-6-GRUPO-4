@@ -216,6 +216,8 @@ while True:
         input("\noprima tecla para continuar")
 
 
+
+
     elif int(inputs[0]) == 6:
         #REQUERIMIENTO 4
         #input: fecha inicial
@@ -253,7 +255,7 @@ while True:
                 mayor=x
                 i= aux[x]
 
-        print("\nEl estado con mas accidentes fue: " ,mayor, "con: ", i, "accidentes" "\n")
+        print("\nEl estado con mas accidentes fue: " ,mayor, "\n")
 
 
 
