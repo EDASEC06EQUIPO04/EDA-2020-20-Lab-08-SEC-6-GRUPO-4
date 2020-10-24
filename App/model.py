@@ -111,7 +111,24 @@ def addDateIndex(datentry, accident):
         lt.addLast(entry['lststate'], accident)
     return datentry
 
+def getAccidentsByRange(analyzer, initialDate,finalDate):
+    
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+    
+    lstiterator = it.newIterator(lst)
+    totalAccidents = 0
+    while (it.hasNext(lstiterator)):
+        lstdate = it.next(lstiterator)
+        totalAccidents += lt.size(lstdate['lstaccidents'])
+    return totalAccidents
+    
 
+
+def getAccidentsByRange2(analyzer, initialDate,finalDate):
+    
+    lst = om.values(analyzer['dateIndex'], initialDate,finalDate)
+    
+    return lst
 
 
 def newDataEntry(accident):
