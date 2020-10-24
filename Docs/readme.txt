@@ -4,4 +4,4 @@ Laura Vanessa Pardo
 Julian David Saenz
 Andres lugos
 
-Preguntas resueltas en el formato doc adjunto
+Preguntas resueltas en el formato doc adjunto.
